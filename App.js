@@ -27,6 +27,7 @@ import AddArea from "./Screens/Shops/AddArea";
 
 const Drawer = createDrawerNavigator();
 function ShopTab() {
+  
   return (
     <Drawer.Navigator
       screenOptions={({ route }) => ({
