@@ -22,6 +22,16 @@ const ComonStyles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#000'
     },
+    inputStyle2:{
+        width: '50%',
+        height: 50,
+        // margin: 10,
+        fontSize: 15,
+        padding: 10,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#000'
+    },
     buttonTransparent:{
         backgroundColor: '#fff',
         color: '#000'
