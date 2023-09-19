@@ -3,8 +3,7 @@ import React, { Component } from 'react'
 import { StyleSheet } from 'react-native'
 import CommonButton from '../../utils/CommonButton'
 
-export class IndividualShop extends Component {
-  render() {
+export function IndividualShop ({navigation}) {
     return (
       <View style={styles.body}>
         <View style={styles.flatlist}>
@@ -47,9 +46,19 @@ export class IndividualShop extends Component {
             />
           </View>
         </View>
+
+        <View style={styles.flatlist}>
+          <View style={styles.align}>
+            <CommonButton
+              title={"Shop Records"}
+              color={"#000"}
+              style={{ width: "90%", borderRadius: 10, margin: "5%" }}
+              handleOnPress={() => navigation.navigate("Shop Records")}
+            />
+          </View>
+        </View>
       </View>
     )
-  }
 }
 
 const styles = StyleSheet.create({
