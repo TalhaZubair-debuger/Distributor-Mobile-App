@@ -28,7 +28,6 @@ import ShopRecords from "./Screens/Shops/ShopRecords";
 
 const Drawer = createDrawerNavigator();
 function ShopTab() {
-  
   return (
     <Drawer.Navigator
       screenOptions={({ route }) => ({
@@ -110,7 +109,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <RootStack.Navigator>
-        {/* <RootStack.Screen
+        <RootStack.Screen
           name="Login"
           component={Login}
           options={{
@@ -123,7 +122,7 @@ export default function App() {
           options={{
             headerShown: false,
           }}
-        /> */}
+        />
         <RootStack.Screen
           name="HomeTabs"
           component={HomeTabs}

@@ -11,9 +11,6 @@ import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import app from "../../firebaseConfig";
-import { getDatabase, ref, push } from "firebase/database";
 
 const SignUp = ({ navigation }) => {
   const [username, SetUsername] = useState("");
@@ -21,30 +18,35 @@ const SignUp = ({ navigation }) => {
   const [email, SetEmail] = useState("");
   const [number, SetNumber] = useState(null);
   const [cnic, SetCnic] = useState(null);
-  const db = getDatabase(app);
-  const userDataRef = ref(db, "User");
 
   function singup() {
-    const formData = {
-      username,
-      password,
-      email,
-      number,
-      cnic,
-    };
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        alert("User created successfully");
+    console.log(username, password, email, number, cnic);
+
+    fetch("http://localhost:8080/user/signup", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: username,
+        password,
+        email,
+        number,
+        cnic,
+      }),
+    })
+      .then((res) => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Something went wrong 😮");
+        }
+        return res.json();
       })
-      .then(() => {
-        push(userDataRef, formData);
-        navigation.replace("Login");
+      .then((data) => {
+        console.log(data);
+        navigation.navigate("Login");
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(errorMessage);
+      .catch((err) => {
+        console.log(err.data.msg);
       });
   }
 
