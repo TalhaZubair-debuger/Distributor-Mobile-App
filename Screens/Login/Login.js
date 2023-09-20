@@ -11,30 +11,40 @@ import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
   const [email, SetEmail] = useState("");
   const [password, SetPassword] = useState("");
-  //   const [error, setError] = useState("");
+  const [error, setError] = useState("");
+
 
   const onSubmitHandler = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     if (!email || !password) {
-      //   setError("Fill all fields");
+      setError("Fill all fields");
       return;
     }
-    const res = await fetch("http://localhost:8080/user/login", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-    const data = res.token;
+    try {
+      const res = await fetch("http://localhost:8080/user/login", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+      const data = res;
+      console.log(data.token);
+      await AsyncStorage.setItem('jwtToken', `Bearer ${data}`);
+      setError("");
+      navigation.navigate("HomeTabs");
 
-    // setError("");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Text,
   View,
-  useWindowDimensions
+  useWindowDimensions,
+  Button
 } from "react-native";
 import React, { Component } from "react";
 import SalesFlatList from "../../utils/SalesFlatList";
@@ -13,6 +14,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import CustomButton from "../../utils/CommonButton";
 import CommonFlatList from '../../utils/CommonFlatList';
 import { LineChart } from "react-native-chart-kit";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export function Sales({ navigation }) {
   const windowWidth = useWindowDimensions().width;
   const width = windowWidth - 40;
@@ -53,9 +56,16 @@ export function Sales({ navigation }) {
   const navigateToProductPage = () => {
     // navigation.navigate('Product Page')
   };
+  const checkJWT = () => {
+    const token = AsyncStorage.getItem("jwtToken");
+    console.log(token);
+  }
   return (
     <ScrollView>
       <View style={styles.body}>
+        <Button onPress={()=> checkJWT()}>
+          <Text>Check jwtToken</Text>
+        </Button>
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Inventory Available</Text>
