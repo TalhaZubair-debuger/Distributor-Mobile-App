@@ -11,33 +11,30 @@ import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
-import { auth } from "../../firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = ({ navigation }) => {
   const [email, SetEmail] = useState("");
   const [password, SetPassword] = useState("");
-  // const [secure, setSecure] = React.useState(props.secure);
   //   const [error, setError] = useState("");
 
-  const onSubmitHandler = () => {
-    // event.preventDefault();
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
     if (!email || !password) {
       //   setError("Fill all fields");
       return;
     }
-    // setError("");
+    const res = await fetch("http://localhost:8080/user/login", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+    const data = res.token;
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((res) => {
-        alert("sign in");
-        navigation.replace("HomeTabs");
-        // navigate("/");
-      })
-      .catch((err) => {
-        // setError(err.message);
-        alert(err);
-      });
+    // setError("");
   };
 
   return (
