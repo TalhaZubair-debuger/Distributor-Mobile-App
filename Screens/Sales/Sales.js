@@ -56,16 +56,10 @@ export function Sales({ navigation }) {
   const navigateToProductPage = () => {
     // navigation.navigate('Product Page')
   };
-  const checkJWT = () => {
-    const token = AsyncStorage.getItem("jwtToken");
-    console.log(token);
-  }
   return (
     <ScrollView>
       <View style={styles.body}>
-        <Button onPress={()=> checkJWT()}>
           <Text>Check jwtToken</Text>
-        </Button>
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Inventory Available</Text>

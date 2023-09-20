@@ -36,11 +36,16 @@ const Login = ({ navigation }) => {
           password,
         }),
       });
-      const data = res;
-      console.log(data.token);
-      await AsyncStorage.setItem('jwtToken', `Bearer ${data}`);
-      setError("");
-      navigation.navigate("HomeTabs");
+      if (res.status === 200){
+        const data = await res.json();
+        const token = data.token;
+        await AsyncStorage.setItem('jwtToken', `Bearer ${token}`);
+        setError("");
+        navigation.navigate("HomeTabs");
+      }
+      else{
+        setError("Login failed. Please check your credentials.");
+      }
 
     } catch (error) {
       console.log(error);
