@@ -9,47 +9,65 @@ import {
 import ComonStyles from "../../utils/CommonCss";
 import CustomButton from "../../utils/CommonButton";
 import React, { useState } from "react";
-import app from "../../firebaseConfig";
-import { getDatabase, onValue, ref, set, push } from "firebase/database";
+import HostName from "../../utils/HostName";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const AddShop = () => {
-  const [shopName, SetShopName] = useState("");
-  const [id, SetId] = useState(null);
-  const [registration, SetRegistration] = useState("");
-  const [number, SetNumber] = useState(null);
-  const [cnic, SetCnic] = useState(null);
-  const db = getDatabase(app);
-  const shopsDataRef = ref(db, "ShopsData");
+  const [shopName, setShopName] = useState(null);
+  const [area, setArea] = useState(null);
+  const [registration, setRegistration] = useState(null);
+  const [number, setNumber] = useState(null);
+  const [cnic, setCnic] = useState(null);
 
   const submitShopData = async (event) => {
     event.preventDefault();
-    const SName = shopName;
-    const Id = id;
-    const reg = registration;
-    const num = number;
-    const nic = cnic;
+    const shopName1 = shopName;
+    const registration1 = registration;
+    const ownerPhoneNo = number;
+    const ownerCnic = cnic;
+    const area1 = area;
     if (
-      SName === "" ||
-      Id === null ||
-      reg === "" ||
-      num === null ||
-      nic === null
+      shopName1 === "" ||
+      registration1 === null ||
+      ownerPhoneNo === null ||
+      ownerCnic === null ||
+      area1 === ""
     ) {
       Alert.alert("Failure", "Please fill form completely");
     } else {
-      const formData = { SName, Id, reg, num, nic };
+      const formData = { shopName: shopName1,
+         registration: registration1, 
+         ownerPhoneNo, 
+         ownerCnic, 
+         area: area1 };
+
+      console.log(shopName1);
 
       try {
-        push(shopsDataRef, formData);
+        // push(shopsDataRef, formData);
+        const jwtToken = await AsyncStorage.getItem("jwtToken");
+        const response = await fetch(`${HostName}shops/add-shop`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${jwtToken}`
+          },
+          method: "PUT",
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.shop) {
+          setShopName("");
+          setArea("");
+          setRegistration("");
+          setNumber(null);
+          setCnic(null);
+          Alert.alert("Success", `${data.message}`);
+        }
       } catch (error) {
+        Alert.alert("Failed!", `${error.message}`);
         console.log(error);
       }
-      SetShopName("");
-      SetId(null);
-      SetRegistration("");
-      SetNumber(null);
-      SetCnic(null);
-      Alert.alert("Success", "Shop added succesfully");
     }
   };
   return (
@@ -64,23 +82,15 @@ const AddShop = () => {
             style={ComonStyles.inputStyle1}
             value={shopName}
             inputMode="text"
-            onChangeText={(newValue) => SetShopName(newValue)}
-            required
-          />
-          <TextInput
-            placeholder="Shop Id"
-            style={ComonStyles.inputStyle1}
-            value={id}
-            inputMode="numeric"
-            onChangeText={(newValue) => SetId(newValue)}
+            onChangeText={(newValue) => setShopName(newValue)}
             required
           />
           <TextInput
             placeholder="Shop Registration No."
             style={ComonStyles.inputStyle1}
             value={registration}
-            inputMode="text"
-            onChangeText={(newValue) => SetRegistration(newValue)}
+            inputMode="numeric"
+            onChangeText={(newValue) => setRegistration(newValue)}
             required
           />
           <TextInput
@@ -88,7 +98,7 @@ const AddShop = () => {
             style={ComonStyles.inputStyle1}
             value={number}
             inputMode="numeric"
-            onChangeText={(newValue) => SetNumber(newValue)}
+            onChangeText={(newValue) => setNumber(newValue)}
             required
           />
           <TextInput
@@ -96,10 +106,17 @@ const AddShop = () => {
             style={ComonStyles.inputStyle1}
             value={cnic}
             inputMode="numeric"
-            onChangeText={(newValue) => SetCnic(newValue)}
+            onChangeText={(newValue) => setCnic(newValue)}
             required
           />
-
+          <TextInput
+            placeholder="Shop Area"
+            style={ComonStyles.inputStyle1}
+            value={area}
+            inputMode="text"
+            onChangeText={(newValue) => setArea(newValue)}
+            required
+          />
           <CustomButton
             title={"Add Shop"}
             color={"#000"}

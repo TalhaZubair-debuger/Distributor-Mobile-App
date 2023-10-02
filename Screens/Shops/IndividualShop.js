@@ -1,9 +1,37 @@
 import { Text, View } from 'react-native'
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import CommonButton from '../../utils/CommonButton'
+import { useRoute } from '@react-navigation/native';
+import HostName from '../../utils/HostName';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Button } from 'react-native';
 
 export function IndividualShop ({navigation}) {
+  const [shopData, setShopData] = useState("");
+  const route = useRoute();
+  useEffect(()=>{
+    getShopData();
+  },[]);
+  const getShopData = async() => {
+    const shopId = route.params.shopId;
+    
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shops/shop/${shopId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const data = await response.json();
+      setShopData(data.shop);
+    } catch (error) {
+      Alert.alert("Failed!", `${error.message}`);
+      console.log(error);
+    }
+  }
     return (
       <View style={styles.body}>
         <View style={styles.flatlist}>
@@ -12,27 +40,27 @@ export function IndividualShop ({navigation}) {
           </View>
           <View style={styles.row}>
             <Text style={styles.bold}>Shop Name: </Text>
-            <Text>Elegent Mart</Text>
+            <Text>{shopData.shopName}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.bold}>Shop Number: </Text>
-            <Text>123456</Text>
+            <Text>{shopData.registration}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.bold}>Shop Location: </Text>
-            <Text>80 C</Text>
+            <Text>-</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.bold}>Shop Area: </Text>
-            <Text>Iqbal Avenue</Text>
+            <Text>{shopData.area}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.bold}>Owner Name: </Text>
-            <Text>Khalid</Text>
+            <Text style={styles.bold}>Owner CNIC: </Text>
+            <Text>{shopData.ownerCnic}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.bold}>Owner Contact: </Text>
-            <Text>0300000000</Text>
+            <Text>{shopData.ownerPhoneNo}</Text>
           </View>
         </View>
 

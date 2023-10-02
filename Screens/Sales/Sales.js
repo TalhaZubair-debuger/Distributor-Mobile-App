@@ -59,7 +59,6 @@ export function Sales({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.body}>
-          <Text>Check jwtToken</Text>
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Inventory Available</Text>

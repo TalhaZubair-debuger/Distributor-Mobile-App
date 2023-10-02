@@ -1,13 +1,19 @@
 import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
+import { TouchableOpacity } from 'react-native';
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
-const FlatList = ({ title, purchase }) => {
+const FlatList = ({ title, purchase, shopId, navigation }) => {
+    const navigateToIndividualShop = () => {
+        navigation.navigate("Individual Shop", {shopId});
+    };
     return (
-        <View style={styles.item}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.purchase}> <Text style={styles.color}>{purchase != null ? "🔺" : ""}</Text> {purchase}</Text>
-        </View>
+        <TouchableOpacity onPress={navigateToIndividualShop}>
+            <View style={styles.item}>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.purchase}> <Text style={styles.color}>{purchase != null ? "🔺" : ""}</Text> {purchase}</Text>
+            </View>
+        </TouchableOpacity>
     )
 }
 
@@ -32,8 +38,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         textAlign: 'left',
         maxWidth: 150,
-        borderRightColor: '#aaa',
-        borderRightWidth: 2,
+        // borderRightColor: '#aaa',
+        // borderRightWidth: 2,
         marginLeft: 5
     },
     purchase: {

@@ -7,45 +7,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   Button,
+  Pressable,
 } from "react-native";
 import ManageShopsFlatList from "../../utils/ManageShopsFlatList";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import React, { useEffect, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HostName from "../../utils/HostName";
+import { Touchable } from "react-native";
 // import database from "../../firebaseConfig";
 
 export default function ManageShops({ navigation }) {
-  // const data = [
-  //   {
-  //     id: 1,
-  //     title: "ShopOne",
-  //     purchase: "72500",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "ShopTwo",
-  //     purchase: "85200",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "ShopThree",
-  //     purchase: "105200",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "ShopFour",
-  //     purchase: "99000",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "ShopFive",
-  //     purchase: "88000",
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "ShopSix",
-  //     purchase: "115000",
-  //   },
-  // ];
   const [data, setData] = useState([]);
   const [dataChange, setDataChange] = useState(false);
 
@@ -71,47 +43,39 @@ export default function ManageShops({ navigation }) {
     }
   };
   // const deleteShopData = (shopId) => {
-    // const shopsRef = database.ref(`ShopsData/${shopId}`)
-    // shopsRef.remove((err) => {
-    //   if (err) {
-    //     console.log(err)
-    //   } else {
-    //     setDataChange(true);
-    //   }
-    // })
+  // const shopsRef = database.ref(`ShopsData/${shopId}`)
+  // shopsRef.remove((err) => {
+  //   if (err) {
+  //     console.log(err)
+  //   } else {
+  //     setDataChange(true);
+  //   }
+  // })
   // };
 
   const fetchStockData = async () => {
     try {
-      const response = await fetch(
-        "https://distribution-application-b96ea-default-rtdb.firebaseio.com/ShopsData.json"
-      );
-
-      if (response.ok) {
-        const responseData = await response.json();
-
-        const dataArray = Object.keys(responseData).map((key) => ({
-          id: key,
-          ...responseData[key],
-        }));
-        setData(dataArray);
-      } else {
-        console.error(response.status);
-        Alert.alert(
-          "Failure",
-          "Failed to fetch shop data. Please try again later."
-        );
-      }
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shops/shop`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setData(Data.shops);
     } catch (error) {
       console.log(error);
+      Alert.alert(
+        "Failure", "Failed to fetch Shops Data. Please try again later."
+      );
     }
   };
   useEffect(() => {
     fetchStockData();
-  }, [window.onload, dataChange]);
-  // const navigateToIndividualShop = () => {
-  //   navigation.navigate("Individual Shop");
-  // };
+  }, []);
+
   return (
     <View style={styles.body}>
       <View style={styles.flatlist}>
@@ -121,23 +85,22 @@ export default function ManageShops({ navigation }) {
       </View>
       <View style={styles.flatlist}>
         <SafeAreaView>
-          <TouchableOpacity>
             <FlatList
               data={data}
               renderItem={({ item }) => (
 
                 <View style={styles.item}>
-                  <Text style={styles.title}>{item.SName}</Text>
+                  <Text style={styles.title}>{item.shopName}</Text>
                   <Text style={styles.purchase}>
                     <View style={styles.fontawesome}>
                       <Text style={styles.innerFonts}>
                         <FontAwesome5 name={"edit"} size={20} color={"#aaaaaa"} />
                       </Text>
-                      <Text style={styles.innerFonts}>
-                        {/* <Button onPress={() => deleteShopData(item.Id)}>
+                      <Pressable>
+                        <Text style={styles.innerFonts}>
                           <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
-                        </Button> */}
-                      </Text>
+                        </Text>
+                      </Pressable>
                     </View>
                   </Text>
                 </View>
@@ -145,7 +108,6 @@ export default function ManageShops({ navigation }) {
               )}
               keyExtractor={(item) => item.id}
             />
-          </TouchableOpacity>
         </SafeAreaView>
       </View>
     </View>

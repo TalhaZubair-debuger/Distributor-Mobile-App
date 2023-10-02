@@ -11,6 +11,8 @@ import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
+import HostName from "../../utils/HostName";
+
 
 const SignUp = ({ navigation }) => {
   const [username, SetUsername] = useState("");
@@ -22,7 +24,7 @@ const SignUp = ({ navigation }) => {
   function singup() {
     console.log(username, password, email, number, cnic);
 
-    fetch("http://localhost:8080/user/signup", {
+    fetch(`${HostName}user/signup`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

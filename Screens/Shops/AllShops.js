@@ -3,6 +3,10 @@ import CommonFlatList from '../../utils/CommonFlatList';
 import React, { useEffect, useState } from 'react';
 import { app } from '../../firebaseConfig';
 import { getDatabase, onValue, ref } from 'firebase/database';
+import HostName from '../../utils/HostName';
+import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function AllShops({ navigation }) {
   const db = getDatabase(app);
@@ -10,15 +14,21 @@ export default function AllShops({ navigation }) {
   const [data, setData] = useState([]);
   useEffect(() => {
     fetchShopData()
-  },[])
+  }, [])
 
   const fetchShopData = async () => {
     try {
-      onValue(shopsDataRef, (snapshot) => {
-        const data = snapshot.val();
-        const productsArray = data ? Object.values(data) : [];
-        setData(productsArray);
-    })
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shops/shop`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setData(Data.shops);
+      // console.log(Data);
     } catch (error) {
       console.log(error);
       Alert.alert(
@@ -27,9 +37,7 @@ export default function AllShops({ navigation }) {
     }
   };
 
-  const navigateToIndividualShop = () => {
-    navigation.navigate('Individual Shop')
-  }
+
   return (
     <View style={styles.body}>
       <View style={styles.flatlist}>
@@ -39,17 +47,15 @@ export default function AllShops({ navigation }) {
       </View>
       <View style={styles.flatlist}>
         <SafeAreaView>
-          <TouchableOpacity
-            onPress={navigateToIndividualShop}
-          >
-            <FlatList
-              data={data}
-              renderItem={({ item }) => <CommonFlatList title={item.SName} />}
-              keyExtractor={item => item.id}
+          <FlatList
+            data={data}
+            renderItem={({ item }) => <CommonFlatList
+              title={item.shopName}
+              shopId={item._id}
+              navigation={navigation} />}
+            keyExtractor={item => item._id}
 
-            />
-          </TouchableOpacity>
-
+          />
         </SafeAreaView>
       </View>
     </View>

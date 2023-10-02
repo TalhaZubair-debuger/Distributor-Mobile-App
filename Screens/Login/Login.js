@@ -6,12 +6,15 @@ import {
   ImageBackground,
   Pressable,
   Button,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import HostName from "../../utils/HostName";
+
 
 const Login = ({ navigation }) => {
   const [email, SetEmail] = useState("");
@@ -26,7 +29,7 @@ const Login = ({ navigation }) => {
       return;
     }
     try {
-      const res = await fetch("http://localhost:8080/user/login", {
+      const res = await fetch(`${HostName}user/login`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -36,14 +39,14 @@ const Login = ({ navigation }) => {
           password,
         }),
       });
-      if (res.status === 200){
+      if (res.status === 200) {
         const data = await res.json();
         const token = data.token;
         await AsyncStorage.setItem('jwtToken', `Bearer ${token}`);
         setError("");
         navigation.navigate("HomeTabs");
       }
-      else{
+      else {
         setError("Login failed. Please check your credentials.");
       }
 
@@ -54,6 +57,12 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.body}>
+      {
+        error ?
+          <Alert><Text>{error}</Text></Alert>
+          :
+          <></>
+      }
       {/* <ImageBackground source={BackGroundLogin} resizeMode='cover' style={styles.image}> */}
       <Text style={ComonStyles.heading1}>Distributor?</Text>
       <Text style={ComonStyles.heading3}>SignIn here</Text>
