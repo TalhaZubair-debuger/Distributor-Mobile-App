@@ -1,37 +1,62 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import React, { Component } from "react";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
+import React, { Component, useState } from "react";
 import { FlatList } from "react-native";
 import VendorsFlatList from "../../utils/VendorsFlatList";
 import CommonButton from "../../utils/CommonButton";
+import { TextInput } from "react-native";
+import CommonCss from "../../utils/CommonCss"
 
 export function Finance({ navigation }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [vendorName, setVendorName] = useState("");
   const data = [
     {
       id: 1,
       title: "P&G",
-      products: ["Handfree", "Hair Straightener"],
     },
     {
       id: 2,
       title: "Unilever",
-      products: ["Noodles", "Dove soap"],
-    },
-    {
-      id: 3,
-      title: "Vivo",
-      products: ["v21", "v20"],
     },
     {
       id: 4,
       title: "Apple",
-      products: ["IPhone 14", "IPhone 14 Pro Max"],
     },
   ];
-  const navigateToIndividualShop = () => {
-    navigation.navigate("Finance");
-  };
   return (
-    <ScrollView>
+    <ScrollView style={styles.topContainer}>
+
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.headingFlatlist}>
+            <Text style={styles.head}>Add new vendor</Text>
+          </View>
+          <TextInput
+            placeholder="Vendor Name"
+            style={CommonCss.inputStyle1}
+            value={vendorName}
+            inputMode="text"
+            onChangeText={(newValue) => setVendorName(newValue)}
+            required
+          />
+          <CommonButton
+            title={"Add Vendor"}
+            color={"#000"}
+            style={{ width: "80%", borderRadius: 10, margin: 10, fontSize: 10 }}
+            handleOnPress={() => {setModalVisible(!modalVisible);}}
+          />
+        </View>
+      </Modal>
+
+
       <View style={styles.body}>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
@@ -39,26 +64,40 @@ export function Finance({ navigation }) {
           </View>
           <SafeAreaView>
             <View style={styles.flatlist}>
-              <SafeAreaView>
-                <TouchableOpacity onPress={navigateToIndividualShop}>
-                  <FlatList
-                    data={data}
-                    renderItem={({ item, products }) => (
-                      <VendorsFlatList title={item.title} products={item.products} />
-                    )}
-                    keyExtractor={(item) => item.id}
-                  />
-                </TouchableOpacity>
-              </SafeAreaView>
+              <FlatList
+                data={data}
+                renderItem={({ item }) => (
+                  <VendorsFlatList title={item.title} />
+                )}
+                keyExtractor={(item) => item.id}
+              />
             </View>
           </SafeAreaView>
-          <CommonButton
-          title={"Products Re-Stock"}
-          color={"#000"}
-          style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-          handleOnPress={() => navigation.navigate("ReOrder Products")}
-        />
         </View>
+
+        <View style={styles.flatlist}>
+          <View style={styles.row}>
+            <CommonButton
+              title={"All Vendors"}
+              color={"#000"}
+              style={{ width: "45%", borderRadius: 10, margin: 10, fontSize: 10 }}
+            handleOnPress={() => navigation.navigate("All Vendors")}
+            />
+            <CommonButton
+              title={"Add Vendor"}
+              color={"#000"}
+              style={{ width: "45%", borderRadius: 10, margin: 10, fontSize: 10 }}
+              handleOnPress={() => setModalVisible(!modalVisible)}
+            />
+          </View>
+          {/* <CommonButton
+            title={"Products Re-Stock"}
+            color={"#000"}
+            style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
+            handleOnPress={() => navigation.navigate("ReOrder Products")}
+          /> */}
+        </View>
+
       </View>
     </ScrollView>
   );
@@ -113,6 +152,20 @@ const styles = StyleSheet.create({
   head: {
     fontSize: 20,
     fontWeight: 600,
+  },
+  topContainer: {
+    flex: 1
+  },
+  centeredView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 200,
+    marginHorizontal: 10,
+    backgroundColor: "#fff",
+    padding: 5,
+    elevation: 30,
+    shadowColor: "#000",
+    borderRadius: 10
   },
 });
 

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Button,
   Pressable,
+  TextInput,
 } from "react-native";
 import ManageShopsFlatList from "../../utils/ManageShopsFlatList";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -15,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HostName from "../../utils/HostName";
 import { Touchable } from "react-native";
+import { Alert } from "react-native";
 // import database from "../../firebaseConfig";
 
 export default function ManageShops({ navigation }) {
@@ -76,6 +78,29 @@ export default function ManageShops({ navigation }) {
     fetchStockData();
   }, []);
 
+  const handleEdit = (shopID) => {
+    navigation.navigate("Edit Shop", { shopID });
+  }
+  const handleDelete = async (shopID) => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shops/shop/${shopID}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "DELETE"
+      })
+      const Data = await response.json();
+      Alert.alert("Success", `${Data.message}`);
+      fetchStockData();
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure", "Failed to delete shop."
+      );
+    }
+  }
   return (
     <View style={styles.body}>
       <View style={styles.flatlist}>
@@ -85,29 +110,31 @@ export default function ManageShops({ navigation }) {
       </View>
       <View style={styles.flatlist}>
         <SafeAreaView>
-            <FlatList
-              data={data}
-              renderItem={({ item }) => (
+          <FlatList
+            data={data}
+            renderItem={({ item }) => (
 
-                <View style={styles.item}>
-                  <Text style={styles.title}>{item.shopName}</Text>
-                  <Text style={styles.purchase}>
-                    <View style={styles.fontawesome}>
+              <View style={styles.item}>
+                <Text style={styles.title}>{item.shopName}</Text>
+                <Text style={styles.purchase}>
+                  <View style={styles.fontawesome}>
+                    <Pressable onPress={() => handleEdit(item._id)}>
                       <Text style={styles.innerFonts}>
                         <FontAwesome5 name={"edit"} size={20} color={"#aaaaaa"} />
                       </Text>
-                      <Pressable>
-                        <Text style={styles.innerFonts}>
-                          <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
-                        </Text>
-                      </Pressable>
-                    </View>
-                  </Text>
-                </View>
+                    </Pressable>
+                    <Pressable onPress={() => handleDelete(item._id)}>
+                      <Text style={styles.innerFonts}>
+                        <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
+                      </Text>
+                    </Pressable>
+                  </View>
+                </Text>
+              </View>
 
-              )}
-              keyExtractor={(item) => item.id}
-            />
+            )}
+            keyExtractor={item => item._id}
+          />
         </SafeAreaView>
       </View>
     </View>
@@ -186,4 +213,7 @@ const styles = StyleSheet.create({
   innerFonts: {
     margin: 10,
   },
+  hidden: {
+    display: "none"
+  }
 });

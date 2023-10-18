@@ -1,19 +1,25 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { TouchableOpacity } from "react-native";
 
-const RemoveStockFlatList = ({ title }) => {
+const RemoveStockFlatList = ({ title, navigation }) => {
+  const navigateToIndividualShop = () => {
+    navigation.navigate("Individual Shop");
+  };
   return (
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.purchase}>
-        <View style={styles.fontawesome}>
-          <Text style={styles.innerFonts}>
-            <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
-          </Text>
-        </View>
-      </Text>
-    </View>
+    <TouchableOpacity onPress={navigateToIndividualShop}>
+      <View style={styles.item}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.purchase}>
+          <View style={styles.fontawesome}>
+            <Text style={styles.innerFonts}>
+              <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
+            </Text>
+          </View>
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 

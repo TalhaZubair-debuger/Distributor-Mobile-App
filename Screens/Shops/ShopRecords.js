@@ -3,8 +3,27 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native'
 import ComonStyles from '../../utils/CommonCss'
 import { Picker } from '@react-native-picker/picker';
+import { FlatList } from 'react-native';
+import RecordsList from '../../utils/RecordsList';
+import { SafeAreaView } from 'react-native';
 
 const ShopRecords = () => {
+    const data = [
+        {
+            id: 1,
+            entryMessage: "200 Handfrees",
+            entryDate: "30th March, 23",
+            sent: "7000",
+            recieved: ""
+        },
+        {
+            id: 2,
+            entryMessage: "50 C-Type cables",
+            entryDate: "25th Sept, 23",
+            sent: "2000",
+            recieved: "3400"
+        },
+    ]
     const [msgSendValue, setMsgSendValue] = useState("Send");
     return (
         <View style={styles.body}>
@@ -18,9 +37,33 @@ const ShopRecords = () => {
                     <Text>Balance</Text>
                 </View>
             </View>
+            <View style={[styles.row, styles.bgcolor]}>
+                <View style={styles.totalRevenue}>
+                    <Text>Entries</Text>
+                </View>
+                <View style={styles.shopDebt}>
+                    <Text>You sent</Text>
+                </View>
+                <View style={styles.shopDebt}>
+                    <Text>You recieved</Text>
+                </View>
+            </View>
             <View style={styles.records}>
                 <View style={styles.chatContainer}>
-                    <View style={[styles.chat, styles.sent]}>
+                    <SafeAreaView>
+                        <FlatList
+                            data={data}
+                            renderItem={({ item }) => <RecordsList
+                                entryMessage={item.entryMessage}
+                                entryDate={item.entryDate}
+                                sent={item.sent}
+                                recieved={item.recieved}
+                                />}
+                            keyExtractor={item => item.id}
+
+                        />
+                    </SafeAreaView>
+                    {/* <View style={[styles.chat, styles.sent]}>
                         <View>
                             <Text>I sent 100 peices of Gionee Handfree worth Rs.8,000</Text>
                         </View>
@@ -36,7 +79,7 @@ const ShopRecords = () => {
                         <View>
                             <Text>I sent 1200 peices of Gionee Handfree worth Rs.40,000</Text>
                         </View>
-                    </View>
+                    </View> */}
                 </View>
                 <View style={styles.addRecords}>
                     <View style={styles.row}>
@@ -96,6 +139,11 @@ const styles = StyleSheet.create({
         backgroundColor: "lightgrey",
         width: "100%"
     },
+    bgcolor: {
+        height: 30,
+        backgroundColor: "grey",
+        width: "100%"
+    },
     font20: {
         fontSize: 20
     },
@@ -105,20 +153,15 @@ const styles = StyleSheet.create({
     green: {
         color: "green"
     },
-    chatContainer:{
-        flex: 1,
-        justifyContent:"flex-end",
-        alignItems: "flex-end",
-        bottom: 150,
-        width: "100%"
-    },
+    // chatContainer:{
+    //     flex: 1,
+    //     justifyContent:"flex-end",
+    //     alignItems: "flex-end",
+    //     bottom: 150,
+    //     width: "100%"
+    // },
     chat: {
-        backgroundColor: "#fff",
-        margin: 5,
-        padding: 5,
-        borderRadius: 5,
-        elevation: 20,
-        shadowColor: "#777777bb",
+        padding: 5
     },
     sent: {
         borderColor: "red",
@@ -154,13 +197,15 @@ const styles = StyleSheet.create({
     addRecords: {
         position: 'absolute',
         bottom: 0,
-        left: 0,
-        right: 0,
+        // left: 0,
+        // right: 0,
         padding: 5,
-        backgroundColor: "lightgrey"
+        backgroundColor: "lightgrey",
+        width: "100%"
     },
-    records:{
-        flex: 1
+    records: {
+        flex: 1,
+        width: "100%"
     }
 
 })

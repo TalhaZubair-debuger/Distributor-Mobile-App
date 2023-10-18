@@ -11,81 +11,56 @@ import React, { useEffect, useState } from "react";
 import RemoveStockFlatList from "../../utils/RemoveStockFlatlist";
 import { app } from "../../firebaseConfig";
 import { getDatabase, onValue, ref } from "firebase/database";
+import HostName from '../../utils/HostName';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from "react-native";
 
 export default function RemoveStocks({ navigation }) {
-  // const data = [
-  //   {
-  //     id: 1,
-  //     title: "Item1",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Item2",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Item3",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Item4",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Item5",
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "Item6",
-  //   },
-  // ];
   const db = getDatabase(app);
   const stocksDataRef = ref(db, "Stocks");
   const [data, setData] = useState([]);
   useEffect(() => {
     fetchShopData();
   },[]);
-
   const fetchShopData = async () => {
     try {
-      onValue(stocksDataRef, (snapshot) => {
-        const data = snapshot.val();
-        const stockArray = data ? Object.values(data) : [];
-        setData(stockArray);
-      });
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}products/products`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setData(Data.products);
     } catch (error) {
       console.log(error);
       Alert.alert(
-        "Failure",
-        "Failed to fetch Stocks Data. Please try again later."
+        "Failure", "Failed to fetch Stock Data. Please try again later."
       );
     }
-  };
-  const navigateToIndividualShop = () => {
-    navigation.navigate("Individual Shop");
   };
   return (
     <ScrollView>
       <View style={styles.body}>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
-            <Text style={styles.head}>Remove Stocks</Text>
+            <Text style={styles.head}>Manage Stocks</Text>
           </View>
         </View>
         <View style={styles.flatlist}>
           <SafeAreaView>
-            <TouchableOpacity onPress={navigateToIndividualShop}>
               <FlatList
                 data={data}
-                renderItem={({ item, purchase }) => (
+                renderItem={({ item }) => (
                   <RemoveStockFlatList
-                    title={item.prod}
-                    purchase={item.purchase}
+                    title={item.productName}
+                    navigation={navigation}
                   />
                 )}
                 keyExtractor={(item) => item.id}
               />
-            </TouchableOpacity>
           </SafeAreaView>
         </View>
       </View>

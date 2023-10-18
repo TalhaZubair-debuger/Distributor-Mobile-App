@@ -9,39 +9,47 @@ import {
 import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import CustomButton from "../../utils/CommonButton";
-import app from "../../firebaseConfig";
-import { getDatabase, ref, push } from "firebase/database";
+import HostName from "../../utils/HostName";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddStocks = ({ navigation }) => {
   const [product, SetProduct] = useState("");
   const [productID, SetProductID] = useState("");
   const [quantity, SetQuantity] = useState(0);
-  const db = getDatabase(app);
-  const stocksDataRef = ref(db, "Stocks");
+  const [price, setPrice] = useState(0);
 
   const submitStockData = async (event) => {
     event.preventDefault();
-    const prod = product;
-    const pID = productID;
-    const Quantity = quantity;
-
-    const formData = { prod, pID, Quantity };
-    try {
-      if (prod === "" || pID === "" || Quantity === null) {
-        Alert.alert("Failure", "Please fill form completely");
-      } else {
-        push(stocksDataRef,formData);
-        SetProduct("");
-        SetProductID("");
-        SetQuantity(null);
-        Alert.alert("Success", "Product added succesfully");
+    const productName = product;
+    const productId = productID;
+    const stockQuantity = quantity;
+    if (productName === "" || productId === "" || stockQuantity === 0 || price === 0) {
+      Alert.alert("Failure", "Please fill form completely");
+    }
+    else {
+      const formData = { productId, productName, stockQuantity, price };
+      try {
+        const jwtToken = await AsyncStorage.getItem("jwtToken");
+        const response = await fetch(`${HostName}products/add-product`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${jwtToken}`
+          },
+          method: "PUT",
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.product) {
+          SetProduct("");
+          SetProductID("");
+          SetQuantity(0);
+          setPrice(0);
+          Alert.alert("Success", `${data.message}`);
+        }
+      } catch (error) {
+        Alert.alert("Failed!", `${error.message}`);
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-      Alert.alert(
-        "Failure",
-        "Failed to add product. Please try again later."
-      );
     }
   };
 
@@ -72,6 +80,13 @@ const AddStocks = ({ navigation }) => {
             value={quantity}
             inputMode="numeric"
             onChangeText={(newValue) => SetQuantity(newValue)}
+          />
+          <TextInput
+            placeholder="Price"
+            style={ComonStyles.inputStyle1}
+            value={price}
+            inputMode="decimal"
+            onChangeText={(newValue) => setPrice(newValue)}
           />
           <CustomButton
             title={"Add Product"}

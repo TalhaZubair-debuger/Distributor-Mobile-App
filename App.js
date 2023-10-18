@@ -18,13 +18,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import "react-native-gesture-handler";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import React from "react";
-import AllVendors from "./Screens/Sales/All Vendors";
+import AllVendors from "./Screens/Vendors/AllVendors";
 import AddStocks from "./Screens/Warehouse/AddStocks";
 import RemoveStocks from "./Screens/Warehouse/RemoveStocks";
 import AllShop from "./Screens/Vendors/AllShop";
-import Vendors from "./Screens/Vendors/Vendors";
+import Vendors from "./Screens/Vendors/Vendor";
+import IndividualVendor from "./Screens/Vendors/IndividualVendor";
 import AddArea from "./Screens/Shops/AddArea";
 import ShopRecords from "./Screens/Shops/ShopRecords";
+import EditShop from "./Screens/Shops/EditShop";
 
 const Drawer = createDrawerNavigator();
 function ShopTab() {
@@ -136,8 +138,10 @@ export default function App() {
         <RootStack.Screen name="ReOrder Products" component={ReOrderProducts} />
         <RootStack.Screen name="All Vendors" component={AllVendors} />
         <RootStack.Screen name="AddStocks" component={AddStocks} />
-        <RootStack.Screen name="RemoveStocks" component={RemoveStocks} />
+        <RootStack.Screen name="ManageStocks" component={RemoveStocks} />
         <RootStack.Screen name="Shop Records" component={ShopRecords} />
+        <RootStack.Screen name="Edit Shop" component={EditShop} />
+        <RootStack.Screen name="Individual Vendor" component={IndividualVendor} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

@@ -72,10 +72,10 @@ export const Warehouse = ({ navigation }) => {
             handleOnPress={() => navigation.navigate("AddStocks")}
           />
           <CustomButton
-            title={"Remove Stock"}
+            title={"Manage Stock"}
             color={"#000"}
             style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-            handleOnPress={() => navigation.navigate("RemoveStocks")}
+            handleOnPress={() => navigation.navigate("ManageStocks")}
           />
         </View>
       </View>

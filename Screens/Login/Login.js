@@ -69,6 +69,7 @@ const Login = ({ navigation }) => {
       <TextInput
         placeholder="Email"
         style={ComonStyles.inputStyle1}
+        inputMode="email"
         value={email}
         onChangeText={(newValue) => SetEmail(newValue)}
       />
@@ -76,6 +77,7 @@ const Login = ({ navigation }) => {
         placeholder="Password"
         style={ComonStyles.inputStyle1}
         value={password}
+        inputMode="text"
         // secureTextEntry={secure}
         onChangeText={(newValue) => SetPassword(newValue)}
       />

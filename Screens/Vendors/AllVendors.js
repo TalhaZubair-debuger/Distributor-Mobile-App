@@ -11,52 +11,46 @@ import CommonFlatList from "../../utils/CommonFlatList";
 import React from "react";
 import VendorsFlatList from "../../utils/VendorsFlatList";
 
-export default function Vendors({ navigation }) {
+export default function AllVendors({ navigation }) {
   const data = [
     {
       id: 1,
       title: "P&G",
-      products: ["Handfree", "Hair Straightener"],
     },
     {
       id: 2,
       title: "Unilever",
-      products: ["Noodles", "Dove soap"],
     },
     {
       id: 3,
       title: "Vivo",
-      products: ["v21", "v20"],
     },
     {
       id: 4,
-      title: "Apple",
-      products: ["IPhone 14", "IPhone 14 Pro Max"],
+      title: "Apple"
     },
   ];
-  const navigateToIndividualShop = () => {
-    navigation.navigate("Finance");
-  };
+
   return (
     <View style={styles.body}>
-      <View style={styles.flatlist}>
-        <View style={styles.headingFlatlist}>
-          <Text style={styles.head}>Vendors</Text>
+      {/* <ScrollView> */}
+        <View style={styles.flatlist}>
+          <View style={styles.headingFlatlist}>
+            <Text style={styles.head}>All Vendors</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.flatlist}>
-        <SafeAreaView>
-          <TouchableOpacity onPress={navigateToIndividualShop}>
+        <View style={styles.flatlist}>
+          <SafeAreaView>
             <FlatList
               data={data}
-              renderItem={({ item, products }) => (
-                <VendorsFlatList title={item.title} products={item.products} />
+              renderItem={({ item }) => (
+                <VendorsFlatList title={item.title} navigation={navigation} />
               )}
               keyExtractor={(item) => item.id}
             />
-          </TouchableOpacity>
-        </SafeAreaView>
-      </View>
+          </SafeAreaView>
+        </View>
+      {/* </ScrollView> */}
     </View>
   );
 }
