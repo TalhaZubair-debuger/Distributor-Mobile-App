@@ -27,6 +27,7 @@ import IndividualVendor from "./Screens/Vendors/IndividualVendor";
 import AddArea from "./Screens/Shops/AddArea";
 import ShopRecords from "./Screens/Shops/ShopRecords";
 import EditShop from "./Screens/Shops/EditShop";
+import VendorRecords from "./Screens/Vendors/VendorRecords";
 
 const Drawer = createDrawerNavigator();
 function ShopTab() {
@@ -140,6 +141,7 @@ export default function App() {
         <RootStack.Screen name="AddStocks" component={AddStocks} />
         <RootStack.Screen name="ManageStocks" component={RemoveStocks} />
         <RootStack.Screen name="Shop Records" component={ShopRecords} />
+        <RootStack.Screen name="Vendor Records" component={VendorRecords} />
         <RootStack.Screen name="Edit Shop" component={EditShop} />
         <RootStack.Screen name="Individual Vendor" component={IndividualVendor} />
       </RootStack.Navigator>

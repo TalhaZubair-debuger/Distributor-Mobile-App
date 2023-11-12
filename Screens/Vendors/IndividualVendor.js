@@ -13,8 +13,10 @@ import CommonCss from "../../utils/CommonCss";
 export function IndividualVendor({ navigation }) {
   const [shopData, setShopData] = useState("");
   const [productName, setProductName] = useState("");
+  const [vendorName, setVendorName] = useState("");
   const [productId, setProductId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalEditProductVisible, setModalEditProductVisible] = useState(false);
   const [modalAllProductVisible, setModalAllProductVisible] = useState(false);
   const route = useRoute();
   useEffect(() => {
@@ -39,6 +41,21 @@ export function IndividualVendor({ navigation }) {
     //   console.log(error);
     // }
   }
+
+  data = [
+    {
+      id: 1,
+      productName: "iPhone"
+    },
+    {
+      id: 2,
+      productName: "S23 Ultra"
+    },
+    {
+      id: 3,
+      productName: "Xaiomi"
+    },
+  ]
   return (
     <View style={styles.body}>
 
@@ -101,8 +118,8 @@ export function IndividualVendor({ navigation }) {
           <FlatList
             data={data}
             renderItem={({ item }) => (
-              <View>
-
+              <View style={styles.flatlistProducts}>
+                  <Text>{item.productName}</Text>
               </View>
             )}
             keyExtractor={(item) => item.id}
@@ -112,6 +129,35 @@ export function IndividualVendor({ navigation }) {
             color={"#000"}
             style={{ width: "30%", borderRadius: 10, margin: 10, fontSize: 5 }}
             handleOnPress={() => { setModalAllProductVisible(!modalAllProductVisible) }}
+          />
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalEditProductVisible}
+        onRequestClose={() => {
+          setModalEditProductVisible(!modalEditProductVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.headingFlatlist}>
+            <Text style={styles.head}>Edit Vendor Details</Text>
+          </View>
+          <TextInput
+            placeholder="Vendor Name"
+            style={CommonCss.inputStyle1}
+            value={vendorName}
+            inputMode="text"
+            onChangeText={(newValue) => setVendorName(newValue)}
+            required
+          />
+          <CommonButton
+            title={"Update Vendor"}
+            color={"#000"}
+            style={{ width: "80%", borderRadius: 10, margin: 10, fontSize: 5 }}
+            handleOnPress={() => { setModalEditProductVisible(!modalEditProductVisible) }}
           />
         </View>
       </Modal>
@@ -155,7 +201,7 @@ export function IndividualVendor({ navigation }) {
             title={"Vendor Records"}
             color={"#000"}
             style={{ width: "90%", borderRadius: 10, margin: "5%" }}
-            handleOnPress={() => navigation.navigate("Shop Records")}
+            handleOnPress={() => navigation.navigate("Vendor Records")}
           />
         </View>
       </View>
@@ -173,6 +219,17 @@ export function IndividualVendor({ navigation }) {
             color={"#000"}
             style={{ width: "40%", borderRadius: 10, margin: "5%" }}
             handleOnPress={() => setModalAllProductVisible(!modalAllProductVisible)}
+          />
+        </View>
+      </View>
+
+      <View style={styles.flatlist}>
+        <View style={styles.row}>
+          <CommonButton
+            title={"Edit Vendor Details"}
+            color={"#000"}
+            style={{ width: "90%", borderRadius: 10, margin: "5%" }}
+            handleOnPress={() => { setModalEditProductVisible(!modalEditProductVisible); }}
           />
         </View>
       </View>
@@ -197,6 +254,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 5,
     marginRight: 5,
+  },
+  flatlistProducts: {
+    backgroundColor: "#fff",
+    width: "100%",
+    padding: 5,
+    margin: 5
   },
   headingFlatlist: {
     alignItems: "center",

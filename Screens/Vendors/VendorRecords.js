@@ -7,7 +7,7 @@ import { FlatList } from 'react-native';
 import RecordsList from '../../utils/RecordsList';
 import { SafeAreaView } from 'react-native';
 
-const ShopRecords = () => {
+const VendorRecords = () => {
     const data = [
         {
             id: 1,
@@ -42,10 +42,10 @@ const ShopRecords = () => {
                     <Text>Entries</Text>
                 </View>
                 <View style={styles.shopDebt}>
-                    <Text>You sent</Text>
+                    <Text>Money sent</Text>
                 </View>
                 <View style={styles.shopDebt}>
-                    <Text>You recieved</Text>
+                    <Text>Recieved Items</Text>
                 </View>
             </View>
             <View style={styles.records}>
@@ -104,7 +104,7 @@ const ShopRecords = () => {
     )
 }
 
-export default ShopRecords
+export default VendorRecords
 
 const styles = StyleSheet.create({
     body: {
@@ -189,6 +189,9 @@ const styles = StyleSheet.create({
     records: {
         flex: 1,
         width: "100%"
+    },
+    totalRevenue: {
+        width: "30%"
     }
 
 })
