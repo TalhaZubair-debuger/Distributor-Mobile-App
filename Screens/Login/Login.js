@@ -59,7 +59,7 @@ const Login = ({ navigation }) => {
     <View style={styles.body}>
       {
         error ?
-          <Alert><Text>{error}</Text></Alert>
+          Alert.alert("Error", `${error}`)
           :
           <></>
       }
