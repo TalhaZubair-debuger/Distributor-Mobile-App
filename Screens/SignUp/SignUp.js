@@ -6,6 +6,7 @@ import {
   ImageBackground,
   Pressable,
   Button,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
@@ -48,6 +49,7 @@ const SignUp = ({ navigation }) => {
         navigation.navigate("Login");
       })
       .catch((err) => {
+        Alert.alert("Failed to Sign Up!", err.data.msg)
         console.log(err.data.msg);
       });
   }

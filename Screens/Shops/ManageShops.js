@@ -12,48 +12,15 @@ import {
 } from "react-native";
 import ManageShopsFlatList from "../../utils/ManageShopsFlatList";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HostName from "../../utils/HostName";
 import { Touchable } from "react-native";
 import { Alert } from "react-native";
-// import database from "../../firebaseConfig";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ManageShops({ navigation }) {
   const [data, setData] = useState([]);
-  const [dataChange, setDataChange] = useState(false);
-
-  const deleteShopData = async (shopId) => {
-    try {
-      const response = await fetch(
-        `https://distribution-application-b96ea-default-rtdb.firebaseio.com/ShopsData/${shopId}.json`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.ok) {
-        // Delete was successful
-        console.log("Shop data deleted successfully!");
-        setDataChange(true)
-      } else {
-        console.error(response.status);
-        Alert.alert("Failure", "Failed to delete shop data. Please try again later.");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // const deleteShopData = (shopId) => {
-  // const shopsRef = database.ref(`ShopsData/${shopId}`)
-  // shopsRef.remove((err) => {
-  //   if (err) {
-  //     console.log(err)
-  //   } else {
-  //     setDataChange(true);
-  //   }
-  // })
-  // };
 
   const fetchStockData = async () => {
     try {
@@ -74,9 +41,11 @@ export default function ManageShops({ navigation }) {
       );
     }
   };
-  useEffect(() => {
-    fetchStockData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchStockData()
+    }, [])
+  )
 
   const handleEdit = (shopID) => {
     navigation.navigate("Edit Shop", { shopID });

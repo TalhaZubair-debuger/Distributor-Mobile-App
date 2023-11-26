@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native'
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, useCallback, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import CommonButton from '../../utils/CommonButton'
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import HostName from '../../utils/HostName';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native';
@@ -10,9 +10,12 @@ import { Button } from 'react-native';
 export function IndividualShop ({navigation}) {
   const [shopData, setShopData] = useState("");
   const route = useRoute();
-  useEffect(()=>{
-    getShopData();
-  },[]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getShopData();
+    }, [])
+  )
   const getShopData = async() => {
     const shopId = route.params.shopId;
     

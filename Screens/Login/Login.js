@@ -23,9 +23,8 @@ const Login = ({ navigation }) => {
 
 
   const onSubmitHandler = async (event) => {
-    // event.preventDefault();
     if (!email || !password) {
-      setError("Fill all fields");
+      Alert.alert("Error", `Fill all fields`)
       return;
     }
     try {
@@ -49,21 +48,15 @@ const Login = ({ navigation }) => {
       else {
         setError("Login failed. Please check your credentials.");
       }
-
+      
     } catch (error) {
+      Alert.alert("Error", `${error.message}`)
       console.log(error);
     }
   };
 
   return (
     <View style={styles.body}>
-      {
-        error ?
-          Alert.alert("Error", `${error}`)
-          :
-          <></>
-      }
-      {/* <ImageBackground source={BackGroundLogin} resizeMode='cover' style={styles.image}> */}
       <Text style={ComonStyles.heading1}>Distributor?</Text>
       <Text style={ComonStyles.heading3}>SignIn here</Text>
       <TextInput
@@ -86,7 +79,7 @@ const Login = ({ navigation }) => {
         color={"#000"}
         style={{ width: "80%", borderRadius: 10, margin: 10 }}
         // handleOnPress={() => navigation.navigate("HomeTabs")}
-        handleOnPress={() => onSubmitHandler()}
+        handleOnPress={onSubmitHandler}
       />
       <Text style={styles.text}>No account yet?</Text>
       <Pressable

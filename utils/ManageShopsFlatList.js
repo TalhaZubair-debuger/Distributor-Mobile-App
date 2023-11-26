@@ -4,28 +4,6 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const ManageShopsFlatList = ({ title, id }) => {
 
-  const deleteShopData = async (shopId) => {
-    try {
-      const response = await fetch(
-        `https://distribution-application-b96ea-default-rtdb.firebaseio.com/ShopsData/${shopId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.ok) {
-        // Delete was successful
-        console.log("Shop data deleted successfully!");
-      } else {
-        console.error(response.status);
-        Alert.alert("Failure", "Failed to delete shop data. Please try again later.");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
   return (
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>

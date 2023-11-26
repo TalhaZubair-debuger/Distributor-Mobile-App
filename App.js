@@ -21,6 +21,7 @@ import React from "react";
 import AllVendors from "./Screens/Vendors/AllVendors";
 import AddStocks from "./Screens/Warehouse/AddStocks";
 import RemoveStocks from "./Screens/Warehouse/RemoveStocks";
+import Stock from "./Screens/Warehouse/Stock";
 import AllShop from "./Screens/Vendors/AllShop";
 import Vendors from "./Screens/Vendors/Vendor";
 import IndividualVendor from "./Screens/Vendors/IndividualVendor";
@@ -144,6 +145,7 @@ export default function App() {
         <RootStack.Screen name="Vendor Records" component={VendorRecords} />
         <RootStack.Screen name="Edit Shop" component={EditShop} />
         <RootStack.Screen name="Individual Vendor" component={IndividualVendor} />
+        <RootStack.Screen name="Stock" component={Stock} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

@@ -1,28 +1,86 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
-import React, { Component, useState } from "react";
+import React, { Component, useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import VendorsFlatList from "../../utils/VendorsFlatList";
 import CommonButton from "../../utils/CommonButton";
 import { TextInput } from "react-native";
 import CommonCss from "../../utils/CommonCss"
+import { Alert } from "react-native";
+import HostName from "../../utils/HostName";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from "@react-navigation/native";
 
 export function Finance({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [vendorName, setVendorName] = useState("");
-  const data = [
-    {
-      id: 1,
-      title: "P&G",
-    },
-    {
-      id: 2,
-      title: "Unilever",
-    },
-    {
-      id: 4,
-      title: "Apple",
-    },
-  ];
+  const [vendorContact, setVendorContact] = useState(null);
+  const [data, setData] = useState([]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchTopVendorData()
+    }, [data])
+    )
+
+    const fetchTopVendorData = async () => {
+      try {
+        const jwtToken = await AsyncStorage.getItem("jwtToken");
+        const response = await fetch(`${HostName}vendors/top-vendors`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${jwtToken}`
+          },
+          method: "GET"
+        })
+        const Data = await response.json();
+        setData(Data.vendors);
+      } catch (error) {
+        console.log(error);
+        Alert.alert(
+          "Failure", error.message
+        );
+      }
+    };
+
+  const addVendor = async() => {
+    if (
+      vendorName === "" ||
+      vendorContact === null
+    ) {
+      Alert.alert("Failure", "Please fill form completely");
+    } 
+    else {
+      const formData = { vendorName, vendorContact };
+    
+      try {
+        const jwtToken = await AsyncStorage.getItem("jwtToken")
+        const response = await fetch(`${HostName}vendors/add-vendor`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${jwtToken}`
+          },
+          method: "PUT",
+          body: JSON.stringify(formData)
+        });
+    
+        const data = await response.json();
+        if (data.message) {
+          setVendorContact(null);
+          setVendorName("");
+          setModalVisible(!modalVisible);
+          if (!data.vendor){
+            Alert.alert("Failure!", data.message);
+          }
+          else {
+            Alert.alert("Success!", data.message);
+          }
+        }
+      } 
+      catch (error) {
+        Alert.alert("Failure!", error.message);
+        console.log(error);
+      }
+    }
+  }
   return (
     <ScrollView style={styles.topContainer}>
 
@@ -47,11 +105,19 @@ export function Finance({ navigation }) {
             onChangeText={(newValue) => setVendorName(newValue)}
             required
           />
+          <TextInput
+            placeholder="Vendor Contact"
+            style={CommonCss.inputStyle1}
+            value={vendorContact}
+            inputMode="numeric"
+            onChangeText={(newValue) => setVendorContact(newValue)}
+            required
+          />
           <CommonButton
             title={"Add Vendor"}
             color={"#000"}
             style={{ width: "80%", borderRadius: 10, margin: 10, fontSize: 10 }}
-            handleOnPress={() => {setModalVisible(!modalVisible);}}
+            handleOnPress={addVendor}
           />
         </View>
       </Modal>
@@ -64,13 +130,18 @@ export function Finance({ navigation }) {
           </View>
           <SafeAreaView>
             <View style={styles.flatlist}>
-              <FlatList
-                data={data}
-                renderItem={({ item }) => (
-                  <VendorsFlatList title={item.title} />
-                )}
-                keyExtractor={(item) => item.id}
-              />
+              {
+                data ?
+                <FlatList
+                  data={data}
+                  renderItem={({ item }) => (
+                    <VendorsFlatList title={item.vendorName} navigation={navigation} id={item._id} />
+                  )}
+                  keyExtractor={(item) => item._id}
+                />
+                :
+                <Text>No Vendors Found</Text>
+              }
             </View>
           </SafeAreaView>
         </View>

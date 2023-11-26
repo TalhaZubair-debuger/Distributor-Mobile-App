@@ -5,35 +5,44 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity,
 } from "react-native";
-import CommonFlatList from "../../utils/CommonFlatList";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import VendorsFlatList from "../../utils/VendorsFlatList";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import HostName from "../../utils/HostName";
+import { Alert } from "react-native";
 
 export default function AllVendors({ navigation }) {
-  const data = [
-    {
-      id: 1,
-      title: "P&G",
-    },
-    {
-      id: 2,
-      title: "Unilever",
-    },
-    {
-      id: 3,
-      title: "Vivo",
-    },
-    {
-      id: 4,
-      title: "Apple"
-    },
-  ];
+  const [data, setData] = useState([]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchVendorData()
+    }, [])
+  )
+  const fetchVendorData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}vendors/all-vendors`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setData(Data.vendors);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure", error.message
+      );
+    }
+  };
 
   return (
-    <View style={styles.body}>
-      {/* <ScrollView> */}
+    <ScrollView>
+      <View style={styles.body}>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
             <Text style={styles.head}>All Vendors</Text>
@@ -44,14 +53,14 @@ export default function AllVendors({ navigation }) {
             <FlatList
               data={data}
               renderItem={({ item }) => (
-                <VendorsFlatList title={item.title} navigation={navigation} />
+                <VendorsFlatList title={item.vendorName} id={item._id} navigation={navigation} />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
             />
           </SafeAreaView>
         </View>
-      {/* </ScrollView> */}
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -59,7 +68,6 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     flexDirection: "column",
-    // justifyContent: 'center',
     alignItems: "center",
   },
   flatlist: {
@@ -73,7 +81,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 5,
     marginRight: 5,
-    // justifyContent: 'center',
   },
   headingFlatlist: {
     alignItems: "center",

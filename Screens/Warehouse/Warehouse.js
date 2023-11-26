@@ -33,7 +33,7 @@ export const Warehouse = ({ navigation }) => {
           <SafeAreaView>
             <FlatList
               data={Productdata}
-              renderItem={({ item, quantity }) => (
+              renderItem={({ item }) => (
                 <WarehouseFlatList
                   title={item.title}
                   quantity={item.quantity}
@@ -66,7 +66,7 @@ export const Warehouse = ({ navigation }) => {
         </View>
         <View style={styles.flatlist}>
           <CustomButton
-            title={"Add Stock"}
+            title={"Add New Stock"}
             color={"#000"}
             style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
             handleOnPress={() => navigation.navigate("AddStocks")}

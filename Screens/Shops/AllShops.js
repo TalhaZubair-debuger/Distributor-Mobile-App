@@ -1,20 +1,21 @@
 import { FlatList, SafeAreaView, ScrollView, Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import CommonFlatList from '../../utils/CommonFlatList';
-import React, { useEffect, useState } from 'react';
-import { app } from '../../firebaseConfig';
-import { getDatabase, onValue, ref } from 'firebase/database';
+import React, { useCallback, useEffect, useState } from 'react';
 import HostName from '../../utils/HostName';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CommonCss from "../../utils/CommonCss";
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function AllShops({ navigation }) {
-  const db = getDatabase(app);
-  const shopsDataRef = ref(db, "ShopsData");
   const [data, setData] = useState([]);
-  useEffect(() => {
-    fetchShopData()
-  }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchShopData()
+    }, [])
+  )
 
   const fetchShopData = async () => {
     try {
@@ -28,11 +29,12 @@ export default function AllShops({ navigation }) {
       })
       const Data = await response.json();
       setData(Data.shops);
+      // if (Data)
       // console.log(Data);
     } catch (error) {
       console.log(error);
       Alert.alert(
-        "Failure", "Failed to fetch Shops Data. Please try again later."
+        "Failure", "Failed to fetch Shops Data. Please add a new shop."
       );
     }
   };
@@ -46,6 +48,8 @@ export default function AllShops({ navigation }) {
         </View>
       </View>
       <View style={styles.flatlist}>
+        {
+          data ? 
         <SafeAreaView>
           <FlatList
             data={data}
@@ -56,7 +60,10 @@ export default function AllShops({ navigation }) {
             keyExtractor={item => item._id}
 
           />
-        </SafeAreaView>
+        </SafeAreaView> 
+        : 
+        <Text style={CommonCss.notFound}>No Shops Found</Text>
+        }
       </View>
     </View>
   )

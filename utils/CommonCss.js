@@ -35,6 +35,18 @@ const ComonStyles = StyleSheet.create({
     buttonTransparent:{
         backgroundColor: '#fff',
         color: '#000'
-    }
+    },
+    notFound: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+        textAlign: "center"
+      },
+      fontawesome: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+      },
 })
 export default ComonStyles;

@@ -7,22 +7,23 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import RemoveStockFlatList from "../../utils/RemoveStockFlatlist";
-import { app } from "../../firebaseConfig";
-import { getDatabase, onValue, ref } from "firebase/database";
 import HostName from '../../utils/HostName';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from "react-native";
+import CommonCss from "../../utils/CommonCss";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function RemoveStocks({ navigation }) {
-  const db = getDatabase(app);
-  const stocksDataRef = ref(db, "Stocks");
   const [data, setData] = useState([]);
-  useEffect(() => {
-    fetchShopData();
-  },[]);
-  const fetchShopData = async () => {
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchStockData();
+    }, [data])
+  )
+  const fetchStockData = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem("jwtToken");
       const response = await fetch(`${HostName}products/products`, {
@@ -37,7 +38,7 @@ export default function RemoveStocks({ navigation }) {
     } catch (error) {
       console.log(error);
       Alert.alert(
-        "Failure", "Failed to fetch Stock Data. Please try again later."
+        "Failure!", "No Products found"
       );
     }
   };
@@ -50,18 +51,28 @@ export default function RemoveStocks({ navigation }) {
           </View>
         </View>
         <View style={styles.flatlist}>
-          <SafeAreaView>
-              <FlatList
-                data={data}
-                renderItem={({ item }) => (
-                  <RemoveStockFlatList
-                    title={item.productName}
-                    navigation={navigation}
+          {
+            data ?
+              data.length ?
+                <SafeAreaView>
+                  <FlatList
+                    data={data}
+                    renderItem={({ item }) => (
+                      <RemoveStockFlatList
+                        id={item._id}
+                        title={item.productName}
+                        navigation={navigation}
+                      />
+                    )}
+                    keyExtractor={(item) => item._id}
                   />
-                )}
-                keyExtractor={(item) => item.id}
-              />
-          </SafeAreaView>
+                </SafeAreaView>
+                :
+                <></>
+              :
+              <Text style={CommonCss.notFound}>No Stock Found</Text>
+
+          }
         </View>
       </View>
     </ScrollView>

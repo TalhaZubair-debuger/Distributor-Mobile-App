@@ -20,8 +20,7 @@ const AddArea = () => {
   // const db = getDatabase(app);
   // const areasDataRef = ref(db, "Areas");
 
-  const submitShopData = async (event) => {
-    event.preventDefault();
+  const submitShopData = async () => {
     const Id = areaCode;
     if (
       areaName === "" ||

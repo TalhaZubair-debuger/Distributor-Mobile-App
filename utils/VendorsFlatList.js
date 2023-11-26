@@ -2,16 +2,16 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
-const VendorsFlatList = ({ title, navigation }) => {
+const VendorsFlatList = ({ title, id, navigation }) => {
   const navigateToIndividualVendor = () => {
-    navigation.navigate("Individual Vendor");
+    navigation.navigate("Individual Vendor", {vendorId: id});
   };
   return (
-    <View style={styles.item}>
-      <TouchableOpacity onPress={navigateToIndividualVendor}>
+    <TouchableOpacity onPress={navigateToIndividualVendor}>
+      <View style={styles.item}>
         <Text style={styles.title}>{title}</Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 

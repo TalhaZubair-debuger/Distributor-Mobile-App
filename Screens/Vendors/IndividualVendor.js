@@ -1,61 +1,141 @@
 import { FlatList, Text, View } from 'react-native'
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, useCallback, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import CommonButton from '../../utils/CommonButton'
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import HostName from '../../utils/HostName';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native';
 import { Modal } from 'react-native';
 import { TextInput } from 'react-native';
 import CommonCss from "../../utils/CommonCss";
+import { Alert } from 'react-native';
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { Pressable } from 'react-native';
 
 export function IndividualVendor({ navigation }) {
-  const [shopData, setShopData] = useState("");
+  const [vendorData, setVendorData] = useState("");
   const [productName, setProductName] = useState("");
+  const [productPrice, setProductPrice] = useState(null);
   const [vendorName, setVendorName] = useState("");
-  const [productId, setProductId] = useState(null);
+  const [vendorContact, setVendorContact] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEditProductVisible, setModalEditProductVisible] = useState(false);
   const [modalAllProductVisible, setModalAllProductVisible] = useState(false);
   const route = useRoute();
-  useEffect(() => {
-    getShopData();
-  }, []);
-  const getShopData = async () => {
-    // const shopId = route.params.shopId;
+  const vendorId = route.params.vendorId;
 
-    // try {
-    //   const jwtToken = await AsyncStorage.getItem("jwtToken");
-    //   const response = await fetch(`${HostName}shops/shop/${shopId}`, {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       'Authorization': `${jwtToken}`
-    //     },
-    //     method: "GET"
-    //   })
-    //   const data = await response.json();
-    //   setShopData(data.shop);
-    // } catch (error) {
-    //   Alert.alert("Failed!", `${error.message}`);
-    //   console.log(error);
-    // }
+  useFocusEffect(
+    useCallback(() => {
+      getVendorData();
+    }, [vendorData])
+  )
+  const getVendorData = async () => {
+
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}vendors/vendor/${vendorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const data = await response.json();
+      if (!data.vendor) {
+        Alert.alert("Failure!", `${data.message}`);
+      }
+      else {
+        setVendorData(data.vendor);
+      }
+    } catch (error) {
+      Alert.alert("Failed!", `${error.message}`);
+      console.log(error);
+    }
   }
 
-  data = [
-    {
-      id: 1,
-      productName: "iPhone"
-    },
-    {
-      id: 2,
-      productName: "S23 Ultra"
-    },
-    {
-      id: 3,
-      productName: "Xaiomi"
-    },
-  ]
+  const addVendorProduct = async () => {
+    if (productName === "" || productPrice === null) {
+      Alert.alert("Failure", "Please fill form completely");
+    }
+    else {
+      const formData = { productName, productPrice };
+      try {
+        const jwtToken = await AsyncStorage.getItem("jwtToken");
+        const response = await fetch(`${HostName}vendors/add-product/${vendorId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${jwtToken}`
+          },
+          method: "POST",
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.message) {
+          setProductName("");
+          setProductPrice(null);
+          setModalVisible(!modalVisible);
+          Alert.alert("Alert!", `${data.message}`);
+        }
+      } catch (error) {
+        Alert.alert("Failed!", `${error.message}`);
+        console.log(error);
+      }
+    }
+  }
+  const handleVendorProductDelete = async (productName) => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}vendors/delete-product?vendorId=${vendorData._id}&productName=${productName}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "DELETE"
+      })
+      const Data = await response.json();
+      Alert.alert("Success", `${Data.message}`);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure", "Failed to delete Vendor Product."
+      );
+    }
+  }
+
+  const handleUpdateVendorDetails = async () => {
+    if (
+      vendorName === "" ||
+      vendorContact === null
+    ) {
+      Alert.alert("Failure", "Please fill form completely");
+    } else {
+      const formData = {
+        vendorName,
+        vendorContact
+      };
+      try {
+        const jwtToken = await AsyncStorage.getItem("jwtToken");
+        const response = await fetch(`${HostName}vendors/edit-vendor/${vendorData._id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${jwtToken}`
+          },
+          method: "PATCH",
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.vendor) {
+          setModalEditProductVisible(!modalEditProductVisible);
+          Alert.alert("Success", `${data.message}`);
+        }
+      } catch (error) {
+        Alert.alert("Failed!", `${error.message}`);
+        console.log(error);
+      }
+    }
+  }
+
   return (
     <View style={styles.body}>
 
@@ -81,18 +161,18 @@ export function IndividualVendor({ navigation }) {
             required
           />
           <TextInput
-            placeholder="Product Id"
+            placeholder="Product Price"
             style={CommonCss.inputStyle1}
-            value={productId}
+            value={productPrice}
             inputMode="numeric"
-            onChangeText={(newValue) => setProductId(newValue)}
+            onChangeText={(newValue) => setProductPrice(newValue)}
             required
           />
           <CommonButton
             title={"Add Product"}
             color={"#000"}
             style={{ width: "80%", borderRadius: 10, margin: 10, fontSize: 10 }}
-            handleOnPress={() => { setModalVisible(!modalVisible); }}
+            handleOnPress={addVendorProduct}
           />
           <CommonButton
             title={"Cancel"}
@@ -113,17 +193,33 @@ export function IndividualVendor({ navigation }) {
       >
         <View style={styles.centeredView}>
           <View style={styles.headingFlatlist}>
-            <Text style={styles.head}>All products of Apple</Text>
+            <Text style={styles.head}>All products of {vendorData ? vendorData.vendorName : null}</Text>
           </View>
-          <FlatList
-            data={data}
-            renderItem={({ item }) => (
-              <View style={styles.flatlistProducts}>
-                  <Text>{item.productName}</Text>
-              </View>
-            )}
-            keyExtractor={(item) => item.id}
-          />
+          {
+            vendorData ?
+              vendorData.vendorProducts.length !== 0 ?
+                <FlatList
+                  data={vendorData ? vendorData.vendorProducts.length !== 0 ? vendorData.vendorProducts : null : null}
+                  renderItem={({ item, index }) => (
+                    <View key={index} style={styles.flatlistProducts}>
+                      <Text >{item.productName}{" "}</Text>
+                      <Text >{" "}Rs.{item.productPrice}</Text>
+                      <View style={CommonCss.fontawesome}>
+                        <Pressable onPress={() => handleVendorProductDelete(item.productName)}>
+                          <Text style={styles.innerFonts}>
+                            <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
+                          </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  )}
+                  keyExtractor={(item) => item._id}
+                />
+                :
+                <Text>No Vendor Product Found</Text>
+              :
+              <></>
+          }
           <CommonButton
             title={"Close"}
             color={"#000"}
@@ -153,11 +249,19 @@ export function IndividualVendor({ navigation }) {
             onChangeText={(newValue) => setVendorName(newValue)}
             required
           />
+          <TextInput
+            placeholder="Vendor Contact"
+            style={CommonCss.inputStyle1}
+            value={vendorContact}
+            inputMode="numeric"
+            onChangeText={(newValue) => setVendorContact(newValue)}
+            required
+          />
           <CommonButton
             title={"Update Vendor"}
             color={"#000"}
             style={{ width: "80%", borderRadius: 10, margin: 10, fontSize: 5 }}
-            handleOnPress={() => { setModalEditProductVisible(!modalEditProductVisible) }}
+            handleOnPress={handleUpdateVendorDetails}
           />
         </View>
       </Modal>
@@ -169,23 +273,31 @@ export function IndividualVendor({ navigation }) {
         </View>
         <View style={styles.row}>
           <Text style={styles.bold}>Vendor Name: </Text>
-          <Text>{shopData.shopName}</Text>
-          <Text>Apple</Text>
+          <Text>{vendorData ? vendorData.vendorName : null}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.bold}>Vendor Number: </Text>
-          <Text>{shopData.registration}</Text>
-          <Text>123niub5ub2b6ou2b6</Text>
+          <Text style={styles.bold}>Vendor Id: </Text>
+          <Text>{vendorData ? vendorData._id : null}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.bold}>Vendor Products: </Text>
-          <Text>{shopData.registration}</Text>
-          <Text>iPhone15, iPad Pro, iMac Pro</Text>
+
+          {vendorData && vendorData.vendorProducts ? (
+            vendorData.vendorProducts.length > 0 ? (
+              vendorData.vendorProducts.map((item, index) => (
+                <Text key={index}>{item.productName}, </Text>
+              ))
+            ) : (
+              <Text>No Products</Text>
+            )
+          ) : (
+            <Text>No Products</Text>
+          )}
+
         </View>
         <View style={styles.row}>
           <Text style={styles.bold}>Vendor Contact: </Text>
-          <Text>{shopData.ownerPhoneNo}</Text>
-          <Text>03174071947</Text>
+          <Text>{vendorData ? vendorData.vendorContact : null}</Text>
         </View>
       </View>
 
@@ -258,17 +370,22 @@ const styles = StyleSheet.create({
   flatlistProducts: {
     backgroundColor: "#fff",
     width: "100%",
-    padding: 5,
-    margin: 5
+    // margin: 5,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
   },
   headingFlatlist: {
     alignItems: "center",
     justifyContent: "center",
+    textAlign: "center",
     margin: 10,
   },
   head: {
     fontSize: 30,
     fontWeight: 600,
+    textAlign: "center"
   },
   row: {
     flexDirection: "row",
@@ -290,6 +407,9 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     borderColor: "#000",
     borderWidth: 1
+  },
+  innerFonts: {
+    margin: 10,
   },
 })
 

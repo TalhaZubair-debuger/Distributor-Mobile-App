@@ -29,6 +29,11 @@ const EditShop = () => {
     useEffect(() => {
         getShopData()
     }, [shopId]);
+    useFocusEffect(
+        useCallback(() => {
+            getShopData()
+        }, [])
+    )
 
     const getShopData = async () => {
         try {
@@ -55,8 +60,7 @@ const EditShop = () => {
         }
     }
 
-    const submitShopData = async (event) => {
-        event.preventDefault();
+    const submitShopData = async () => {
         const shopName1 = shopName;
         const registration1 = registration;
         const ownerPhoneNo = number;
@@ -112,7 +116,7 @@ const EditShop = () => {
                         placeholder="Shop Name"
                         style={ComonStyles.inputStyle1}
                         value={shopName}
-                        //   defaultValue={shopData.shopName}
+                        defaultValue={shopData ? shopData.shopName : null}
                         inputMode="text"
                         onChangeText={(newValue) => setShopName(newValue)}
                         required
@@ -122,7 +126,7 @@ const EditShop = () => {
                         style={ComonStyles.inputStyle1}
                         value={registration}
                         inputMode="numeric"
-                        //   defaultValue={shopData.registration}
+                        defaultValue={shopData ? shopData.registration : null}
                         onChangeText={(newValue) => setRegistration(newValue)}
                         required
                     />
@@ -130,7 +134,7 @@ const EditShop = () => {
                         placeholder="Owner Phone No."
                         style={ComonStyles.inputStyle1}
                         value={number}
-                        //   defaultValue={shopData.ownerPhoneNo}
+                        defaultValue={shopData ? shopData.ownerPhoneNo : null}
                         inputMode="numeric"
                         onChangeText={(newValue) => setNumber(newValue)}
                         required
@@ -139,7 +143,7 @@ const EditShop = () => {
                         placeholder="Owner Identity No."
                         style={ComonStyles.inputStyle1}
                         value={cnic}
-                        //   defaultValue={shopData.ownerCnic}
+                        defaultValue={shopData ? shopData.ownerCnic : null}
                         inputMode="numeric"
                         onChangeText={(newValue) => setCnic(newValue)}
                         required
@@ -149,7 +153,7 @@ const EditShop = () => {
                         style={ComonStyles.inputStyle1}
                         value={area}
                         inputMode="text"
-                        //   defaultValue={shopData.area}
+                        defaultValue={shopData ? shopData.area : null}
                         onChangeText={(newValue) => setArea(newValue)}
                         required
                     />
