@@ -1,13 +1,32 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { TextInput } from 'react-native'
 import ComonStyles from '../../utils/CommonCss'
 import { Picker } from '@react-native-picker/picker';
 import { FlatList } from 'react-native';
 import RecordsList from '../../utils/RecordsList';
 import { SafeAreaView } from 'react-native';
+import CustomButton from '../../utils/CommonButton';
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HostName from '../../utils/HostName';
+import { Alert } from 'react-native';
+
 
 const VendorRecords = () => {
+    const [recordSendValue, setRecordSendValue] = useState("Send");
+    const [quantity, setQuantity] = useState();
+    const [productData, setProductData] = useState(null);
+    const [description, setDescription] = useState();
+    const [youGot, setYouGot] = useState();
+    const [youGave, setYouGave] = useState();
+    const [product, setProduct] = useState();
+    const [msgSendValue, setMsgSendValue] = useState("Send");
+    const [vendorData, setVendorData] = useState();
+    const [VendorRecords, setVendorRecords] = useState();
+    const route = useRoute();
+    const vendorId = route.params.vendorId;
     const data = [
         {
             id: 1,
@@ -23,29 +42,159 @@ const VendorRecords = () => {
             sent: "2000",
             recieved: "3400"
         },
-    ]
-    const [msgSendValue, setMsgSendValue] = useState("Send");
+    ];
+
+
+    useFocusEffect(
+        useCallback(() => {
+            getVendorData();
+            getVendorRecords();
+        }, [])
+    )
+    const getVendorData = async () => {
+        try {
+            const jwtToken = await AsyncStorage.getItem("jwtToken");
+            const response = await fetch(`${HostName}vendors/vendor/${vendorId}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `${jwtToken}`
+                },
+                method: "GET"
+            })
+            const data = await response.json();
+            if (!data.vendor) {
+                Alert.alert("Failure!", `${data.message}`);
+            }
+            else {
+                console.log(data.vendor);
+                setVendorData(data.vendor);
+            }
+        } catch (error) {
+            Alert.alert("Failed!", `${error.message}`);
+            console.log(error);
+        }
+    }
+    const getVendorRecords = async () => {
+        try {
+            const jwtToken = await AsyncStorage.getItem("jwtToken");
+            const response = await fetch(`${HostName}vendor-records/get-records/${vendorId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${jwtToken}`
+                },
+                method: "GET"
+            })
+            const Data = await response.json();
+
+            if (Data.message) {
+                Alert.alert(
+                    "Failure!", Data.message
+                );
+            } else {
+                setVendorRecords(Data.records);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleAddRecord = async () => {
+        if (recordSendValue === null) {
+            Alert.alert("Failure", "Please fill form completely");
+        } else {
+            if (recordSendValue === "Send") {
+                console.log("1");
+                const product = vendorData.vendorProducts.filter(item => {
+                    return item.vendorProducts === product
+                })
+                const formData = {
+                    productName: product[0].productName,
+                    quantity,
+                    youGave: product[0].productPrice * parseInt(quantity),
+                    youGot: null,
+                    sent: true,
+                    recieved: false
+                }
+                try {
+                    const jwtToken = await AsyncStorage.getItem("jwtToken");
+                    const response = await fetch(`${HostName}vendor-records/add-records/${vendorId}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `${jwtToken}`
+                        },
+                        method: "POST",
+                        body: JSON.stringify(formData)
+                    });
+                    const data = await response.json();
+                    console.log("2");
+                    if (data) {
+                        console.log(data.records);
+                        // setVendorData(data.records)
+                        Alert.alert("Alert", `${data.message}`);
+                    }
+                } catch (error) {
+                    Alert.alert("Failed!", `${error.message}`);
+                    console.log(error);
+                }
+            }
+            else if (recordSendValue === "Recieve") {
+                const product = vendorData.vendorProducts.filter(item => {
+                    return item.vendorProducts === product
+                })
+                const formData = {
+                    productName: product[0].productName,
+                    quantity: null,
+                    youGave: null,
+                    youGot: youGot,
+                    sent: false,
+                    recieved: true
+                }
+                try {
+                    const jwtToken = await AsyncStorage.getItem("jwtToken");
+                    const response = await fetch(`${HostName}vendor-records/add-records/${vendorId}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `${jwtToken}`
+                        },
+                        method: "POST",
+                        body: JSON.stringify(formData)
+                    });
+                    const data = await response.json();
+                    if (data) {
+                        console.log(data.records);
+                        Alert.alert("Alert", `${data.message}`);
+                    }
+                } catch (error) {
+                    Alert.alert("Failed!", `${error.message}`);
+                    console.log(error);
+                }
+            }
+        }
+    }
     return (
         <View style={styles.body}>
             <View style={[styles.row, styles.bgColor]}>
-                <View style={styles.totalRevenue}>
-                    <Text style={[styles.font20, styles.green]}>Rs.10,220,222</Text>
-                    <Text>Total Revenue</Text>
+                <View style={styles.block33}>
+                    <Text style={[styles.font15, styles.blue]}>Rs.1000000</Text>
+                    <Text>Total Sent</Text>
                 </View>
-                <View style={styles.shopDebt}>
-                    <Text style={[styles.font20, styles.red]}>Rs.57,400</Text>
+                <View style={styles.block33}>
+                    <Text style={[styles.font15, styles.red]}>Rs.100000</Text>
                     <Text>Balance</Text>
                 </View>
             </View>
             <View style={[styles.row, styles.bgcolor]}>
-                <View style={styles.totalRevenue}>
-                    <Text>Entries</Text>
+                <View style={styles.block15}>
+                    <Text>Quantity</Text>
                 </View>
-                <View style={styles.shopDebt}>
-                    <Text>Money sent</Text>
+                <View style={styles.block35}>
+                    <Text>Description</Text>
                 </View>
-                <View style={styles.shopDebt}>
-                    <Text>Recieved Items</Text>
+                <View style={styles.block25}>
+                    <Text>You gave</Text>
+                </View>
+                <View style={styles.block25}>
+                    <Text>You got</Text>
                 </View>
             </View>
             <View style={styles.records}>
@@ -58,46 +207,90 @@ const VendorRecords = () => {
                                 entryDate={item.entryDate}
                                 sent={item.sent}
                                 recieved={item.recieved}
-                                />}
+                            />}
                             keyExtractor={item => item.id}
 
                         />
                     </SafeAreaView>
                 </View>
                 <View style={styles.addRecords}>
-                    <View style={styles.row}>
-                        <TextInput
-                            placeholder="Message"
-                            style={ComonStyles.inputStyle2}
-                            value={null}
-                            inputMode="text"
-                            // onChangeText={(newValue) => SetShopName(newValue)}
-                            required
-                        />
-                        <View style={[styles.dropdown]}>
-                            <Picker
-                                selectedValue={msgSendValue}
-
-                                onValueChange={(msgSendValue) => setMsgSendValue(msgSendValue)}
-                            >
-                                <Picker.Item label="Send" value="Send" />
-                                <Picker.Item label="Recieve" value="Recieve" />
-                            </Picker>
-                        </View>
-                    </View>
-                    <View style={styles.row}>
-                        <View style={[styles.dropdown2]}>
-                            <Picker
-                                selectedValue={msgSendValue}
-
-                                onValueChange={(msgSendValue) => setMsgSendValue(msgSendValue)}
-                            >
-                                <Picker.Item label="Gionee handsfree" value="Gionee handsfree" />
-                                <Picker.Item label="Fast Powerbank" value="Fast Powerbank" />
-                                <Picker.Item label="Vooc Cable" value="Vooc Cable" />
-                            </Picker>
-                        </View>
-                    </View>
+                    {
+                        recordSendValue === "Send" ?
+                            <View>
+                                <View style={styles.row}>
+                                    <TextInput
+                                        placeholder="Amount Sent"
+                                        style={ComonStyles.inputStyle2}
+                                        value={youGave}
+                                        inputMode="numeric"
+                                        onChangeText={(newValue) => setYouGave(newValue)}
+                                        required
+                                    />
+                                    <View style={[styles.dropdown]}>
+                                        <Picker
+                                            selectedValue={recordSendValue}
+                                            onValueChange={(value) => setRecordSendValue(value)}
+                                        >
+                                            <Picker.Item label="Send" value="Send" />
+                                            <Picker.Item label="Recieve" value="Recieve" />
+                                        </Picker>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <CustomButton
+                                        title={<FontAwesome5 name={"paper-plane"} size={20} color={"#fff"} />}
+                                        color={"#000"}
+                                        style={{ width: "100%", borderRadius: 10, marginVertical: 5 }}
+                                        handleOnPress={handleAddRecord}
+                                    />
+                                </View>
+                            </View>
+                            :
+                            <View>
+                                <View style={styles.row}>
+                                    <TextInput
+                                        placeholder="Items Recieved"
+                                        style={ComonStyles.inputStyle2}
+                                        value={youGot}
+                                        inputMode="numeric"
+                                        onChangeText={(newValue) => setYouGot(newValue)}
+                                        required
+                                    />
+                                    <View style={[styles.dropdown]}>
+                                        <Picker
+                                            selectedValue={recordSendValue}
+                                            onValueChange={(value) => setRecordSendValue(value)}
+                                        >
+                                            <Picker.Item label="Send" value="Send" />
+                                            <Picker.Item label="Recieve" value="Recieve" />
+                                        </Picker>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.dropdown2}>
+                                        <Picker
+                                            selectedValue={product}
+                                            onValueChange={(value) => setProduct(value)}
+                                        >
+                                            {
+                                                vendorData ?
+                                                    vendorData.vendorProducts.map(item => (
+                                                        <Picker.Item key={item.productPrice} label={item.productName} value={item.productName} />
+                                                    ))
+                                                    :
+                                                    <Text>No Products</Text>
+                                            }
+                                        </Picker>
+                                    </View>
+                                    <CustomButton
+                                        title={<FontAwesome5 name={"paper-plane"} size={20} color={"#fff"} />}
+                                        color={"#000"}
+                                        style={{ width: "20%", borderRadius: 10, marginVertical: 5 }}
+                                        handleOnPress={handleAddRecord}
+                                    />
+                                </View>
+                            </View>
+                    }
                 </View>
             </View>
         </View>
@@ -107,6 +300,26 @@ const VendorRecords = () => {
 export default VendorRecords
 
 const styles = StyleSheet.create({
+    block33: {
+        width: "33%",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    block35: {
+        width: "35%",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    block15: {
+        width: "15%",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    block25: {
+        width: "25%",
+        justifyContent: "center",
+        alignItems: "center"
+    },
     body: {
         flex: 1,
         flexDirection: "column",
@@ -133,16 +346,12 @@ const styles = StyleSheet.create({
     red: {
         color: "red"
     },
+    blue: {
+        color: "blue"
+    },
     green: {
         color: "green"
     },
-    // chatContainer:{
-    //     flex: 1,
-    //     justifyContent:"flex-end",
-    //     alignItems: "flex-end",
-    //     bottom: 150,
-    //     width: "100%"
-    // },
     chat: {
         padding: 5
     },
@@ -169,7 +378,7 @@ const styles = StyleSheet.create({
     dropdown2: {
         borderWidth: 2,
         borderColor: "#000",
-        width: "100%",
+        width: "75%",
         color: "#000",
         borderColor: "#000",
         borderRadius: 10,

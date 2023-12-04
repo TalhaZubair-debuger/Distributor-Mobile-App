@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./Screens/Login/Login";
 import SignUp from "./Screens/SignUp/SignUp";
-import Sales from "./Screens/Sales/Sales";
+import Home from "./Screens/Home/Home";
 import Finance from "./Screens/Vendors/Vendor";
 import Shop from "./Screens/Shops/Shop";
 import AllShops from "./Screens/Shops/AllShops";
@@ -65,8 +65,8 @@ function HomeTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, size, color }) => {
           let iconName;
-          if (route.name === "Sales") {
-            iconName = "chart-bar";
+          if (route.name === "Home") {
+            iconName = "home";
             size = focused ? 25 : 20;
           } else if (route.name === "Vendors") {
             iconName = "store-alt";
@@ -93,7 +93,7 @@ function HomeTabs() {
         },
       })}
     >
-      <Tab.Screen name={"Sales"} component={Sales} />
+      <Tab.Screen name={"Home"} component={Home} />
       <Tab.Screen name={"Vendors"} component={Finance} />
       <Tab.Screen
         name={"Shops"}

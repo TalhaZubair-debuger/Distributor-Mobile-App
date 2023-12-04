@@ -84,7 +84,7 @@ export function IndividualShop ({navigation}) {
               title={"Shop Records"}
               color={"#000"}
               style={{ width: "90%", borderRadius: 10, margin: "5%" }}
-              handleOnPress={() => navigation.navigate("Shop Records")}
+              handleOnPress={() => navigation.navigate("Shop Records", {shopId: shopData._id})}
             />
           </View>
         </View>

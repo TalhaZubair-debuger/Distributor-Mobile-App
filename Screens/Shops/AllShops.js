@@ -56,6 +56,7 @@ export default function AllShops({ navigation }) {
             renderItem={({ item }) => <CommonFlatList
               title={item.shopName}
               shopId={item._id}
+              revenue={item.revenue}
               navigation={navigation} />}
             keyExtractor={item => item._id}
 

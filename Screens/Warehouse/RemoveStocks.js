@@ -43,7 +43,6 @@ export default function RemoveStocks({ navigation }) {
     }
   };
   return (
-    <ScrollView>
       <View style={styles.body}>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
@@ -71,11 +70,9 @@ export default function RemoveStocks({ navigation }) {
                 <></>
               :
               <Text style={CommonCss.notFound}>No Stock Found</Text>
-
           }
         </View>
       </View>
-    </ScrollView>
   );
 }
 

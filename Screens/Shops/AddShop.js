@@ -29,8 +29,8 @@ const AddShop = () => {
     const area1 = area;
     if (
       shopName1 === "" ||
-      registration1 === null ||
-      ownerPhoneNo === null ||
+      registration1.length <= 5 ||
+      ownerPhoneNo.length <= 10 ||
       ownerCnic === null ||
       area1 === ""
     ) {
@@ -86,7 +86,7 @@ const AddShop = () => {
             required
           />
           <TextInput
-            placeholder="Shop Registration No."
+            placeholder="Shop Registration (min 5 digits)"
             style={ComonStyles.inputStyle1}
             value={registration}
             inputMode="numeric"
@@ -94,7 +94,7 @@ const AddShop = () => {
             required
           />
           <TextInput
-            placeholder="Owner Phone No."
+            placeholder="Owner Phone No (min 10 digits)"
             style={ComonStyles.inputStyle1}
             value={number}
             inputMode="numeric"

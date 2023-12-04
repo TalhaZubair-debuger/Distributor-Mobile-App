@@ -8,35 +8,115 @@ import {
   useWindowDimensions,
   Button
 } from "react-native";
-import React, { Component } from "react";
+import React, { Component, useCallback, useState } from "react";
 import SalesFlatList from "../../utils/SalesFlatList";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import CustomButton from "../../utils/CommonButton";
 import CommonFlatList from '../../utils/CommonFlatList';
 import { LineChart } from "react-native-chart-kit";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from "@react-navigation/native";
+import HostName from "../../utils/HostName";
+import { Alert } from "react-native";
+import WarehouseFlatList from "../../utils/WarehouseFlatlist";
 
-export function Sales({ navigation }) {
+export function Home({ navigation }) {
   const windowWidth = useWindowDimensions().width;
   const width = windowWidth - 40;
-  const Productdata = [
-    {
-      id: 1,
-      title: "Mobile Cover",
-      totalItems: "12950",
-    },
-    {
-      id: 2,
-      title: "Hair Straightener",
-      totalItems: "8200",
-    },
-    {
-      id: 3,
-      title: "GTX 1660s",
-      totalItems: "19500",
-    },
-  ];
-  const data = [
+  const [user, setUser] = useState();
+  const [productData, setProductData] = useState();
+  const [shopData, setShopData] = useState();
+  const [lowStockProductData, setLowStockProductData] = useState();
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserDetails();
+      fetchStockData();
+      fetchShopData();
+      fetchLowStockProductData();
+    }, [])
+  )
+  const fetchUserDetails = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}user/get-user`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setUser(Data.user);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "No User Data found"
+      );
+    }
+  }
+  const fetchStockData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}products/top-products`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setProductData(Data.products);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "No Products found"
+      );
+    }
+  };
+  const fetchShopData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shops/top-shops`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setShopData(Data.shops);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "No Products found"
+      );
+    }
+  };
+  const fetchLowStockProductData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}products/low-stock-products`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      if (!Data.products) {
+        setLowStockProductData(null);
+      }
+      else {
+        setLowStockProductData(Data.products);
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "No Products found"
+      );
+    }
+  };
+  const Data = [
     {
       id: 1,
       title: "ShopOne",
@@ -62,12 +142,12 @@ export function Sales({ navigation }) {
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Inventory Available</Text>
-            <Text style={styles.numberDisplay}>10500</Text>
+            <Text style={styles.numberDisplay}>{user ? user.currentTotalStock : 0}</Text>
           </View>
 
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Sold in one day</Text>
-            <Text style={styles.numberDisplay}>1526</Text>
+            <Text style={styles.numberDisplay}>NULL</Text>
           </View>
         </View>
 
@@ -119,18 +199,15 @@ export function Sales({ navigation }) {
             <Text style={styles.head}>Top Performing Products</Text>
           </View>
           <SafeAreaView>
-            <TouchableOpacity onPress={navigateToProductPage}>
-              <FlatList
-                data={Productdata}
-                renderItem={({ item, totalItems }) => (
-                  <SalesFlatList
-                    title={item.title}
-                    totalItems={item.totalItems}
-                  />
-                )}
-                keyExtractor={(item) => item.id}
-              />
-            </TouchableOpacity>
+            <FlatList
+              data={productData}
+              renderItem={({ item }) => (
+                <SalesFlatList
+                  title={item.productName}
+                />
+              )}
+              keyExtractor={(item) => item._id}
+            />
           </SafeAreaView>
         </View>
 
@@ -140,11 +217,16 @@ export function Sales({ navigation }) {
           </View>
           <SafeAreaView>
             <FlatList
-              data={data}
-              renderItem={({ item, purchase }) => (
-                <CommonFlatList title={item.title} purchase={item.purchase} />
+              data={shopData}
+              renderItem={({ item }) => (
+                <CommonFlatList
+                  title={item.shopName}
+                  shopId={item._id}
+                  navigation={navigation}
+                  revenue={item.revenue}
+                />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
             />
           </SafeAreaView>
         </View>
@@ -154,28 +236,27 @@ export function Sales({ navigation }) {
             <Text style={styles.head}>Low Stock Products</Text>
           </View>
           <SafeAreaView>
-            <FlatList
-              data={data}
-              renderItem={({ item, purchase }) => (
-                <CommonFlatList title={item.title} purchase={item.purchase} />
+          <FlatList
+              data={lowStockProductData}
+              renderItem={({ item }) => (
+                <WarehouseFlatList
+                  title={item.productName}
+                  quantity={item.stockQuantity}
+                />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
             />
           </SafeAreaView>
         </View>
 
-        {/* <CustomButton
-          title={"Products-Re-Stock"}
-          color={"#000"}
-          style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-          handleOnPress={() => navigation.navigate("ReOrder Products")}
-        />
+        <View style={styles.flatlist}>
         <CustomButton
-          title={"Vendors"}
-          color={"#000"}
-          style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-          handleOnPress={() => navigation.navigate("All Vendors")}
-        /> */}
+            title={"Get Investment"}
+            color={"#000"}
+            style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
+            handleOnPress={() => {console.log("Moving to Website")}}
+          />
+        </View>
       </View>
     </ScrollView>
   );
@@ -242,4 +323,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Sales;
+export default Home;

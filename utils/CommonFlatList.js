@@ -1,17 +1,25 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native';
-// import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
-const FlatList = ({ title, purchase, shopId, navigation }) => {
+const FlatList = ({ title, revenue, shopId, navigation }) => {
     const navigateToIndividualShop = () => {
-        navigation.navigate("Individual Shop", {shopId});
+        navigation.navigate("Individual Shop", { shopId });
     };
     return (
         <TouchableOpacity onPress={navigateToIndividualShop}>
             <View style={styles.item}>
                 <Text style={styles.title}>{title}</Text>
-                <Text style={styles.purchase}> <Text style={styles.color}>{purchase != null ? "🔺" : ""}</Text> {purchase}</Text>
+                <Text style={styles.purchase}>
+                    {
+                        revenue ?
+                            <Text>
+                                <FontAwesome5 name={"arrow-up"} size={15} color={"black"} />{"Rs."}{revenue}
+                            </Text>
+                            : 0
+                    }
+                </Text>
             </View>
         </TouchableOpacity>
     )
@@ -21,13 +29,10 @@ const styles = StyleSheet.create({
     item: {
         flex: 1,
         flexDirection: 'row',
-        // justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
         borderRadius: 10,
         boxShadow: '5px 5px #777777bb',
-        // elevation: 20,
-        // shadowColor: '#777777bb',
         backgroundColor: '#dddddd55',
         marginBottom: 5,
         height: 60
@@ -38,14 +43,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         textAlign: 'left',
         maxWidth: 150,
-        // borderRightColor: '#aaa',
-        // borderRightWidth: 2,
         marginLeft: 5
     },
     purchase: {
         flex: 1,
         justifyContent: 'center',
-        fontSize: 20,
+        fontSize: 15,
         textAlign: 'right',
         marginRight: 5
     },

@@ -5,7 +5,7 @@ const WarehouseFlatList = ({ title, quantity }) => {
     return (
         <View style={styles.item}>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.purchase}>Quantity: {quantity}</Text>
+            <Text style={styles.purchase}>Quantity: {quantity ? quantity !== 0 ? quantity : 0 : 0}</Text>
         </View>
     )
 }
@@ -14,13 +14,10 @@ const styles = StyleSheet.create({
     item: {
         flex: 1,
         flexDirection: 'row',
-        // justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
         borderRadius: 10,
         boxShadow: '5px 5px #777777bb',
-        // elevation: 20,
-        // shadowColor: '#777777bb',
         backgroundColor: '#dddddd55',
         marginBottom: 5,
         height: 60
@@ -31,14 +28,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         textAlign: 'left',
         maxWidth: 150,
-        borderRightColor: '#aaa',
-        borderRightWidth: 2,
         marginLeft: 5 
     },
     purchase: {
         flex: 1,
         justifyContent: 'center',
-        fontSize: 20,
+        fontSize: 15,
         textAlign: 'right',
         marginRight: 5
     },

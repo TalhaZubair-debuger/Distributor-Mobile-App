@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -6,7 +7,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import React, { Component } from "react";
+import React, { Component, useCallback, useState } from "react";
 import CommonButton from "../../utils/CommonButton";
 import ComonStyles from "../../utils/CommonCss";
 import CommonFlatList from "../../utils/CommonFlatList";
@@ -19,10 +20,59 @@ import {
 } from "react-native-table-component";
 import { ScrollView } from "react-native-gesture-handler";
 import { LineChart } from "react-native-chart-kit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import HostName from "../../utils/HostName";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Shop({ navigation }) {
   const windowWidth = useWindowDimensions().width;
   const width = windowWidth - 40;
+  const [user, setUser] = useState();
+  const [shopData, setShopData] = useState();
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserDetails();
+      fetchShopDetails();
+    }, [])
+  )
+  const fetchUserDetails = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}user/get-user`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setUser(Data.user);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "No User Data found"
+      );
+    }
+  }
+  const fetchShopDetails = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shops/top-shops`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setShopData(Data.shops);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "No Shop Data found"
+      );
+    }
+  }
   const data = [
     {
       id: 1,
@@ -46,17 +96,17 @@ export default function Shop({ navigation }) {
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>All Shops</Text>
-            <Text style={styles.numberDisplay}>20</Text>
+            <Text style={styles.numberDisplay}>{user ? user.shops.length ? user.shops.length : 0 : 0}</Text>
           </View>
 
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Areas</Text>
-            <Text style={styles.numberDisplay}>6</Text>
+            <Text style={styles.numberDisplay}>{user ? user.areas.length ? user.areas.length : 0 : 0}</Text>
           </View>
 
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Shops closed</Text>
-            <Text style={styles.numberDisplay}>2</Text>
+            <Text style={styles.numberDisplay}>{user ? user.closedShops ? user.closedShops.length : 0 : 0}</Text>
           </View>
         </View>
         <View style={styles.flatlist}>
@@ -65,11 +115,16 @@ export default function Shop({ navigation }) {
           </View>
           <SafeAreaView>
             <FlatList
-              data={data}
-              renderItem={({ item, purchase }) => (
-                <CommonFlatList title={item.title} purchase={item.purchase} />
+              data={shopData}
+              renderItem={({ item }) => (
+                <CommonFlatList
+                  title={item.shopName}
+                  revenue={item.revenue}
+                  shopId={item._id}
+                  navigation={navigation}
+                />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
             />
           </SafeAreaView>
         </View>
@@ -94,13 +149,13 @@ export default function Shop({ navigation }) {
                 },
               ],
             }}
-            width={width} // from react-native
+            width={width}
             height={220}
             chartConfig={{
               backgroundColor: "#dddddd55",
               backgroundGradientFrom: "#eff3ff",
               backgroundGradientTo: "#efefef",
-              decimalPlaces: 2, // optional, defaults to 2dp
+              decimalPlaces: 2,
               color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
               style: {
                 borderRadius: 5,

@@ -15,19 +15,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const AddStocks = ({ navigation }) => {
   const [product, SetProduct] = useState("");
   const [productID, SetProductID] = useState("");
-  const [quantity, SetQuantity] = useState(0);
   const [price, setPrice] = useState(0);
 
   const submitStockData = async (event) => {
     event.preventDefault();
     const productName = product;
     const productId = productID;
-    const stockQuantity = quantity;
-    if (productName === "" || productId === "" || stockQuantity === 0 || price === 0) {
+    if (productName === "" || productId === "" || price === 0) {
       Alert.alert("Failure", "Please fill form completely");
     }
     else {
-      const formData = { productId, productName, stockQuantity, price };
+      const formData = { productId, productName, price };
       try {
         const jwtToken = await AsyncStorage.getItem("jwtToken");
         const response = await fetch(`${HostName}products/add-product`, {
@@ -42,7 +40,6 @@ const AddStocks = ({ navigation }) => {
         if (data.product) {
           SetProduct("");
           SetProductID("");
-          SetQuantity(0);
           setPrice(0);
           Alert.alert("Success", `${data.message}`);
         }
@@ -73,13 +70,6 @@ const AddStocks = ({ navigation }) => {
             value={productID}
             inputMode="text"
             onChangeText={(newValue) => SetProductID(newValue)}
-          />
-          <TextInput
-            placeholder="Quantity"
-            style={ComonStyles.inputStyle1}
-            value={quantity}
-            inputMode="numeric"
-            onChangeText={(newValue) => SetQuantity(newValue)}
           />
           <TextInput
             placeholder="Price"

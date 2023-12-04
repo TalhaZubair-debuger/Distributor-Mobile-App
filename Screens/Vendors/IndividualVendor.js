@@ -313,7 +313,7 @@ export function IndividualVendor({ navigation }) {
             title={"Vendor Records"}
             color={"#000"}
             style={{ width: "90%", borderRadius: 10, margin: "5%" }}
-            handleOnPress={() => navigation.navigate("Vendor Records")}
+            handleOnPress={() => navigation.navigate("Vendor Records", {vendorId: vendorData._id})}
           />
         </View>
       </View>
