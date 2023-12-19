@@ -89,6 +89,19 @@ const Login = ({ navigation }) => {
         <Text style={styles.text15}>Sign Up Here</Text>
       </Pressable>
       {/* </ImageBackground> */}
+
+      <CustomButton
+        title={"Sign In as KPO"}
+        color={"#000"}
+        style={{ width: "80%", borderRadius: 10, margin: 10 }}
+        handleOnPress={() => navigation.navigate("KPO")}
+      />
+      <CustomButton
+        title={"Sign In as Salesman"}
+        color={"#000"}
+        style={{ width: "80%", borderRadius: 10, margin: 10 }}
+        handleOnPress={() => navigation.navigate("Salesman")}
+      />
     </View>
   );
 };

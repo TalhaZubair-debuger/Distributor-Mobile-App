@@ -29,6 +29,9 @@ import AddArea from "./Screens/Shops/AddArea";
 import ShopRecords from "./Screens/Shops/ShopRecords";
 import EditShop from "./Screens/Shops/EditShop";
 import VendorRecords from "./Screens/Vendors/VendorRecords";
+import Accounts from "./Screens/Accounts/Accounts";
+import AllEmployees from "./Screens/Accounts/AllEmployees";
+import AddEmployees from "./Screens/Accounts/AddEmployee";
 
 const Drawer = createDrawerNavigator();
 function ShopTab() {
@@ -77,12 +80,15 @@ function HomeTabs() {
           } else if (route.name === "Warehouse") {
             iconName = "warehouse";
             size = focused ? 25 : 20;
+          } else if (route.name === "Accounts") {
+            iconName = "users";
+            size = focused ? 25 : 20;
           }
           return <FontAwesome5 name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#000",
         tabBarInactiveTintColor: "#666",
-        tabBarLabelStyle: { fontSize: 15, fontWeight: "bold" },
+        tabBarLabelStyle: { fontSize: 10, fontWeight: "bold" },
         tabBarStyle: {
           display: "flex",
           backgroundColor: "#fff",
@@ -103,6 +109,7 @@ function HomeTabs() {
         }}
       />
       <Tab.Screen name={"Warehouse"} component={Warehouse} />
+      <Tab.Screen name={"Accounts"} component={Accounts} />
     </Tab.Navigator>
   );
 }
@@ -134,6 +141,20 @@ export default function App() {
             headerShown: false,
           }}
         />
+        <RootStack.Screen
+          name="KPO"
+          component={Warehouse}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <RootStack.Screen
+          name="Salesman"
+          component={ShopTab}
+          options={{
+            headerShown: false,
+          }}
+        />
         <RootStack.Screen name="AllShops" component={AllShop} />
         <RootStack.Screen name="Vendors" component={Vendors} />
         <RootStack.Screen name="Individual Shop" component={IndividualShop} />
@@ -146,6 +167,8 @@ export default function App() {
         <RootStack.Screen name="Edit Shop" component={EditShop} />
         <RootStack.Screen name="Individual Vendor" component={IndividualVendor} />
         <RootStack.Screen name="Stock" component={Stock} />
+        <RootStack.Screen name="All Employees" component={AllEmployees} />
+        <RootStack.Screen name="Add Employee" component={AddEmployees} />
       </RootStack.Navigator>
     </NavigationContainer>
   );
