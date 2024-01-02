@@ -11,6 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HostName from "../../utils/HostName";
 import { Alert } from "react-native";
+import Header from "../../utils/Header";
 
 export const Warehouse = ({ navigation }) => {
   const [modalEditProductVisible, setModalEditProductVisible] = useState(false);
@@ -150,21 +151,24 @@ export const Warehouse = ({ navigation }) => {
       </Modal>
 
       <View style={styles.body}>
+      <Header screenName={"Warehouse"} navigation={navigation}/>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
             <Text style={styles.head}>Current Warehouse Stock</Text>
           </View>
           <SafeAreaView>
-            <FlatList
-              data={data ? data.slice(0,3) : null}
-              renderItem={({ item }) => (
-                <WarehouseFlatList
-                  title={item.productName}
-                  quantity={item.stockQuantity}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+            {
+              data ?
+                data.slice(0, 3).map(item => (
+                  <WarehouseFlatList
+                    key={item._id}
+                    title={item.productName}
+                    quantity={item.stockQuantity}
+                  />
+                ))
+                :
+                <></>
+            }
           </SafeAreaView>
         </View>
         <View style={styles.flatlist}>

@@ -1,39 +1,46 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import CustomButton from '../../utils/CommonButton'
+import Header from '../../utils/Header'
 
 const Accounts = ({ navigation }) => {
     return (
-        <View>
-            <View style={styles.flatlist}>
-                <View style={styles.headingFlatlist}>
-                    <Text style={styles.head}>Employees</Text>
+        <ScrollView>
+            <View style={styles.body}>
+                <Header screenName={"Accounts"} navigation={navigation}/>
+                <View style={styles.flatlist}>
+                    <View style={styles.headingFlatlist}>
+                        <Text style={styles.head}>Employees</Text>
+                    </View>
+                    <CustomButton
+                        title={"All Employees"}
+                        color={"#000"}
+                        style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
+                        handleOnPress={() => navigation.navigate("All Employees")}
+                    />
+                    <CustomButton
+                        title={"Add Employee"}
+                        color={"#000"}
+                        style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
+                        handleOnPress={() => navigation.navigate("Add Employee")}
+                    />
                 </View>
-                <CustomButton
-                    title={"All Employees"}
-                    color={"#000"}
-                    style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-                    handleOnPress={() => navigation.navigate("All Employees")}
-                />
-                <CustomButton
-                    title={"Add Employees"}
-                    color={"#000"}
-                    style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-                    handleOnPress={() => navigation.navigate("Add Employee")}
-                />
-            </View>
-            <View style={styles.flatlist}>
-                <View style={styles.headingFlatlist}>
-                    <Text style={styles.head}>Profit & Loss</Text>
+                <View style={styles.flatlist}>
+                    <View style={styles.headingFlatlist}>
+                        <Text style={styles.head}>Profit & Loss</Text>
+                    </View>
                 </View>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
 export default Accounts
 
 const styles = StyleSheet.create({
+    body: {
+        flex: 1
+    },
     flatlist: {
         backgroundColor: "#fff",
         width: "95%",

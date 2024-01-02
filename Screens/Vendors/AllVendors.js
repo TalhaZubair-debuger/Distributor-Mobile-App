@@ -50,13 +50,14 @@ export default function AllVendors({ navigation }) {
         </View>
         <View style={styles.flatlist}>
           <SafeAreaView>
-            <FlatList
-              data={data}
-              renderItem={({ item }) => (
-                <VendorsFlatList title={item.vendorName} id={item._id} navigation={navigation} />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+            {
+              data ?
+                data.map(item => (
+                  <VendorsFlatList title={item.vendorName} id={item._id} navigation={navigation} key={item._id} />
+                ))
+                :
+                <></>
+            }
           </SafeAreaView>
         </View>
       </View>

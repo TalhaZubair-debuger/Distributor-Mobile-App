@@ -2,13 +2,11 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
 
-const EmployeeList = ({ employeeName, employeeDesignation, navigation }) => {
+const EmployeeList = ({ employeeName, employeeDesignation, employeeId, navigation }) => {
   return (
-    <TouchableOpacity onPress={() => { }}>
+    <TouchableOpacity onPress={() => { navigation.navigate("Employee", {employeeId: employeeId}) }}>
       <View style={styles.item}>
-        <Text style={styles.title}>{employeeName}</Text>
-      </View>
-      <View style={styles.item}>
+        <Text style={styles.titleBold}>{employeeName}</Text>
         <Text style={styles.title}>{employeeDesignation}</Text>
       </View>
     </TouchableOpacity>
@@ -20,8 +18,8 @@ export default EmployeeList
 const styles = StyleSheet.create({
   item: {
     flex: 1,
-    flexDirection: "column",
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "space-evenly",
     alignItems: "center",
     width: "100%",
     borderRadius: 10,
@@ -36,5 +34,13 @@ const styles = StyleSheet.create({
     width: "50%",
     textAlign: "center",
     fontSize: 15,
+  },
+  titleBold: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "50%",
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: "600"
   },
 })

@@ -1,9 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import { TextInput } from 'react-native';
 import ComonStyles from '../../utils/CommonCss';
 import { Picker } from '@react-native-picker/picker';
 import CustomButton from '../../utils/CommonButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HostName from "../../utils/HostName";
 
 const AddEmployees = () => {
     const [employeeName, setEmployeeName] = useState("");
@@ -14,7 +16,60 @@ const AddEmployees = () => {
     const [area, setArea] = useState("");
 
     const handleSubmitAddEmployee = async () => {
-        
+        if (
+            employeeName === "" ||
+            employeeContact.length <= 8 ||
+            employeeEmail === "" ||
+            employeePassword === null ||
+            employeeType === ""
+        ) {
+            Alert.alert("Failure", "Please fill form completely");
+        } else {
+            let formData;
+            if (area != "") {
+                formData = {
+                    name: employeeName,
+                    contact: employeeContact,
+                    email: employeeEmail,
+                    password: employeePassword,
+                    designation: employeeType,
+                    area
+                };
+            }
+            else {
+                formData = {
+                    name: employeeName,
+                    contact: employeeContact,
+                    email: employeeEmail,
+                    password: employeePassword,
+                    designation: employeeType
+                };
+            }
+
+            try {
+                const jwtToken = await AsyncStorage.getItem("jwtToken");
+                const response = await fetch(`${HostName}employees/add-employee`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${jwtToken}`
+                    },
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                if (data.message) {
+                    setEmployeeName("");
+                    setEmployeeContact(null);
+                    setEmployeeEmail("");
+                    setEmployeePassword("");
+                    setEmployeeType("");
+                    Alert.alert("Alert!", `${data.message}`);
+                }
+            } catch (error) {
+                Alert.alert("Failed!", `${error.message}`);
+                console.log(error);
+            }
+        }
     }
     return (
         <View>

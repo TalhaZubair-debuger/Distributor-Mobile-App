@@ -19,6 +19,9 @@ import { useFocusEffect } from "@react-navigation/native";
 import HostName from "../../utils/HostName";
 import { Alert } from "react-native";
 import WarehouseFlatList from "../../utils/WarehouseFlatlist";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import ComonStyles from "../../utils/CommonCss";
+import Header from "../../utils/Header";
 
 export function Home({ navigation }) {
   const windowWidth = useWindowDimensions().width;
@@ -116,29 +119,12 @@ export function Home({ navigation }) {
       );
     }
   };
-  const Data = [
-    {
-      id: 1,
-      title: "ShopOne",
-      purchase: "72500",
-    },
-    {
-      id: 2,
-      title: "ShopTwo",
-      purchase: "85200",
-    },
-    {
-      id: 3,
-      title: "ShopThree",
-      purchase: "105200",
-    },
-  ];
-  const navigateToProductPage = () => {
-    // navigation.navigate('Product Page')
-  };
   return (
     <ScrollView>
       <View style={styles.body}>
+        <Header
+        screenName={"Home"} navigation={navigation}
+        />
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>Inventory Available</Text>
@@ -151,63 +137,22 @@ export function Home({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.barchart}>
-          <View style={styles.headingFlatlist}>
-            <Text style={styles.head}>Product Sales Chart</Text>
-          </View>
-          <LineChart
-            data={{
-              labels: ["January", "February", "March", "April"],
-              datasets: [
-                {
-                  data: [
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                  ],
-                },
-              ],
-            }}
-            width={width} // from react-native
-            height={220}
-            chartConfig={{
-              backgroundColor: "#dddddd55",
-              backgroundGradientFrom: "#eff3ff",
-              backgroundGradientTo: "#efefef",
-              decimalPlaces: 2, // optional, defaults to 2dp
-              color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 5,
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              },
-            }}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 5,
-            }}
-          />
-        </View>
-
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
             <Text style={styles.head}>Top Performing Products</Text>
           </View>
           <SafeAreaView>
-            <FlatList
-              data={productData}
-              renderItem={({ item }) => (
-                <SalesFlatList
-                  title={item.productName}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+            {
+              productData ?
+                productData.map(item => (
+                  <SalesFlatList
+                    title={item.productName}
+                    key={item._id}
+                  />
+                ))
+                :
+                <></>
+            }
           </SafeAreaView>
         </View>
 
@@ -216,18 +161,20 @@ export function Home({ navigation }) {
             <Text style={styles.head}>Top Performing Shops</Text>
           </View>
           <SafeAreaView>
-            <FlatList
-              data={shopData}
-              renderItem={({ item }) => (
-                <CommonFlatList
-                  title={item.shopName}
-                  shopId={item._id}
-                  navigation={navigation}
-                  revenue={item.revenue}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+            {
+              shopData ?
+                shopData.map(item => (
+                  <CommonFlatList
+                    title={item.shopName}
+                    shopId={item._id}
+                    navigation={navigation}
+                    revenue={item.revenue}
+                    key={item._id}
+                  />
+                ))
+                :
+                <></>
+            }
           </SafeAreaView>
         </View>
 
@@ -236,25 +183,31 @@ export function Home({ navigation }) {
             <Text style={styles.head}>Low Stock Products</Text>
           </View>
           <SafeAreaView>
-          <FlatList
-              data={lowStockProductData}
-              renderItem={({ item }) => (
-                <WarehouseFlatList
-                  title={item.productName}
-                  quantity={item.stockQuantity}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+            {
+              lowStockProductData ?
+                lowStockProductData.map(item => (
+                  <WarehouseFlatList
+                    title={item.productName}
+                    quantity={item.stockQuantity}
+                    key={item._id}
+                  />
+                ))
+                :
+                <View style={styles.flatlist}>
+                  <View style={styles.headingFlatlist}>
+                    <Text>No Low Stock Products</Text>
+                  </View>
+                </View>
+            }
           </SafeAreaView>
         </View>
 
         <View style={styles.flatlist}>
-        <CustomButton
+          <CustomButton
             title={"Get Investment"}
             color={"#000"}
             style={{ width: "95%", borderRadius: 10, margin: 10, fontSize: 10 }}
-            handleOnPress={() => {console.log("Moving to Website")}}
+            handleOnPress={() => { console.log("Moving to Website") }}
           />
         </View>
       </View>
@@ -319,7 +272,6 @@ const styles = StyleSheet.create({
     shadowColor: "#777777bb",
     margin: 5,
     padding: 5,
-    // justifyContent: 'center',
   },
 });
 

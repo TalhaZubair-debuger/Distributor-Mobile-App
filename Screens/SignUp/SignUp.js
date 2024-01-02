@@ -23,8 +23,6 @@ const SignUp = ({ navigation }) => {
   const [cnic, SetCnic] = useState(null);
 
   function singup() {
-    console.log(username, password, email, number, cnic);
-
     fetch(`${HostName}user/signup`, {
       method: "PUT",
       headers: {
@@ -56,7 +54,6 @@ const SignUp = ({ navigation }) => {
 
   return (
     <View style={styles.body}>
-      {/* <ImageBackground source={BackGroundLogin} resizeMode='cover' style={styles.image}> */}
       <Text style={ComonStyles.heading1}>SignUp</Text>
       <TextInput
         placeholder="Username"
@@ -76,7 +73,7 @@ const SignUp = ({ navigation }) => {
         placeholder="Password"
         style={ComonStyles.inputStyle1}
         value={password}
-        inputMode="password"
+        inputMode="text"
         onChangeText={(newValue) => SetPassword(newValue)}
       />
       <TextInput
@@ -98,8 +95,7 @@ const SignUp = ({ navigation }) => {
         title={"Sign Up"}
         color={"#000"}
         style={{ width: "80%", borderRadius: 10, margin: 10 }}
-        // handleOnPress={() => navigation.navigate("Login")}
-        handleOnPress={() => singup()}
+        handleOnPress={singup}
       />
       <Pressable
         style={styles.button}
@@ -107,7 +103,6 @@ const SignUp = ({ navigation }) => {
       >
         <Text style={styles.text15}>Go Back</Text>
       </Pressable>
-      {/* </ImageBackground> */}
     </View>
   );
 };

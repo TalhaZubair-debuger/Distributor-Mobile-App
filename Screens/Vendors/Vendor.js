@@ -9,6 +9,7 @@ import { Alert } from "react-native";
 import HostName from "../../utils/HostName";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "@react-navigation/native";
+import Header from "../../utils/Header";
 
 export function Finance({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -19,38 +20,38 @@ export function Finance({ navigation }) {
     useCallback(() => {
       fetchTopVendorData()
     }, [data])
-    )
+  )
 
-    const fetchTopVendorData = async () => {
-      try {
-        const jwtToken = await AsyncStorage.getItem("jwtToken");
-        const response = await fetch(`${HostName}vendors/top-vendors`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `${jwtToken}`
-          },
-          method: "GET"
-        })
-        const Data = await response.json();
-        setData(Data.vendors);
-      } catch (error) {
-        console.log(error);
-        Alert.alert(
-          "Failure", error.message
-        );
-      }
-    };
+  const fetchTopVendorData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}vendors/top-vendors`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      setData(Data.vendors);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure", error.message
+      );
+    }
+  };
 
-  const addVendor = async() => {
+  const addVendor = async () => {
     if (
       vendorName === "" ||
       vendorContact === null
     ) {
       Alert.alert("Failure", "Please fill form completely");
-    } 
+    }
     else {
       const formData = { vendorName, vendorContact };
-    
+
       try {
         const jwtToken = await AsyncStorage.getItem("jwtToken")
         const response = await fetch(`${HostName}vendors/add-vendor`, {
@@ -61,20 +62,20 @@ export function Finance({ navigation }) {
           method: "PUT",
           body: JSON.stringify(formData)
         });
-    
+
         const data = await response.json();
         if (data.message) {
           setVendorContact(null);
           setVendorName("");
           setModalVisible(!modalVisible);
-          if (!data.vendor){
+          if (!data.vendor) {
             Alert.alert("Failure!", data.message);
           }
           else {
             Alert.alert("Success!", data.message);
           }
         }
-      } 
+      }
       catch (error) {
         Alert.alert("Failure!", error.message);
         console.log(error);
@@ -124,6 +125,7 @@ export function Finance({ navigation }) {
 
 
       <View style={styles.body}>
+        <Header screenName={"Vendors"} navigation={navigation}/>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
             <Text style={styles.head}>Top Vendors</Text>
@@ -132,13 +134,9 @@ export function Finance({ navigation }) {
             <View style={styles.flatlist}>
               {
                 data ?
-                <FlatList
-                  data={data}
-                  renderItem={({ item }) => (
-                    <VendorsFlatList title={item.vendorName} navigation={navigation} id={item._id} />
-                  )}
-                  keyExtractor={(item) => item._id}
-                />
+                data.map(item => (
+                  <VendorsFlatList key={item._id} title={item.vendorName} navigation={navigation} id={item._id} />
+                ))
                 :
                 <Text>No Vendors Found</Text>
               }
@@ -169,8 +167,8 @@ export function Finance({ navigation }) {
           /> */}
         </View>
 
-      </View>
-    </ScrollView>
+      </View >
+    </ScrollView >
   );
 }
 

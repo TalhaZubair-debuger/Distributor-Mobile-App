@@ -7,6 +7,8 @@ import CommonButton from '../../utils/CommonButton';
 import { Modal } from 'react-native';
 import { TextInput } from 'react-native';
 import CommonCss from '../../utils/CommonCss';
+import { LineChart } from 'react-native-chart-kit';
+import { useWindowDimensions } from 'react-native';
 
 const Stock = () => {
   const [productData, setProductData] = useState();
@@ -17,6 +19,8 @@ const Stock = () => {
   const [modalEditProductVisible, setModalEditProductVisible] = useState(false);
   const route = useRoute();
   const productId = route.params.id;
+  const windowWidth = useWindowDimensions().width;
+  const width = windowWidth - 40;
 
   useFocusEffect(
     useCallback(() => {
@@ -160,6 +164,49 @@ const Stock = () => {
           handleOnPress={() => setModalEditProductVisible(!modalEditProductVisible)}
         />
       </View>
+
+      <View style={styles.barchart}>
+        <View style={styles.headingFlatlist}>
+          <Text style={styles.head}>Product Sales Chart</Text>
+        </View>
+        <LineChart
+          data={{
+            labels: ["January", "February", "March", "April"],
+            datasets: [
+              {
+                data: [
+                  Math.random() * 1000,
+                  Math.random() * 1000,
+                  Math.random() * 1000,
+                  Math.random() * 1000,
+                  Math.random() * 1000,
+                  Math.random() * 1000,
+                ],
+              },
+            ],
+          }}
+          width={width}
+          height={220}
+          chartConfig={{
+            backgroundColor: "#dddddd55",
+            backgroundGradientFrom: "#eff3ff",
+            backgroundGradientTo: "#efefef",
+            decimalPlaces: 2,
+            color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
+            style: {
+              borderRadius: 5,
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
+            borderRadius: 5,
+          }}
+        />
+      </View>
     </View>
   )
 }
@@ -167,6 +214,16 @@ const Stock = () => {
 export default Stock
 
 const styles = StyleSheet.create({
+  barchart: {
+    backgroundColor: "#fff",
+    width: "95%",
+    borderRadius: 10,
+    boxShadow: "5px 5px",
+    elevation: 20,
+    shadowColor: "#777777bb",
+    margin: 5,
+    padding: 5,
+  },
   flatlist: {
     backgroundColor: "#fff",
     width: "95%",
@@ -197,7 +254,7 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "600"
   },
-  
+
   centeredView: {
     justifyContent: 'center',
     alignItems: 'center',

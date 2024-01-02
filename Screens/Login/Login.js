@@ -8,18 +8,43 @@ import {
   Button,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
-import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HostName from "../../utils/HostName";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 const Login = ({ navigation }) => {
   const [email, SetEmail] = useState("");
   const [password, SetPassword] = useState("");
   const [error, setError] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      checkLogin()
+    }, [])
+  )
+
+  const checkLogin = async () => {
+    const jwtToken = await AsyncStorage.getItem("jwtToken");
+    if (jwtToken) {
+      const bearer = jwtToken.split(" ")[0];
+      if (bearer === "Bearer") {
+        navigation.navigate("HomeTabs")
+      }
+      else if (bearer ==="Bearer-KPO"){
+        navigation.navigate("KPO")
+      }
+      else if (bearer ==="Bearer-Salesman"){
+        navigation.navigate("Salesman")
+      }
+      else {
+        BackHandler.exitApp();
+      }
+    }
+  }
 
 
   const onSubmitHandler = async (event) => {
@@ -41,14 +66,27 @@ const Login = ({ navigation }) => {
       if (res.status === 200) {
         const data = await res.json();
         const token = data.token;
-        await AsyncStorage.setItem('jwtToken', `Bearer ${token}`);
-        setError("");
-        navigation.navigate("HomeTabs");
+        if (data.employer) {
+          if (data.employeeDesignation === "KPO") {
+            await AsyncStorage.setItem('jwtToken', `Bearer-KPO ${token}`);
+            navigation.navigate("KPO");
+            return;
+          }
+          else if (data.employeeDesignation === "Salesman"){
+            await AsyncStorage.setItem('jwtToken', `Bearer-Salesman ${token}`);
+            navigation.navigate("Salesman");
+            return;
+          }
+        }
+        else {
+          await AsyncStorage.setItem('jwtToken', `Bearer ${token}`);
+          navigation.navigate("HomeTabs");
+        }
       }
       else {
         setError("Login failed. Please check your credentials.");
       }
-      
+
     } catch (error) {
       Alert.alert("Error", `${error.message}`)
       console.log(error);
@@ -71,14 +109,12 @@ const Login = ({ navigation }) => {
         style={ComonStyles.inputStyle1}
         value={password}
         inputMode="text"
-        // secureTextEntry={secure}
         onChangeText={(newValue) => SetPassword(newValue)}
       />
       <CustomButton
         title={"Sign In"}
         color={"#000"}
         style={{ width: "80%", borderRadius: 10, margin: 10 }}
-        // handleOnPress={() => navigation.navigate("HomeTabs")}
         handleOnPress={onSubmitHandler}
       />
       <Text style={styles.text}>No account yet?</Text>
@@ -88,20 +124,6 @@ const Login = ({ navigation }) => {
       >
         <Text style={styles.text15}>Sign Up Here</Text>
       </Pressable>
-      {/* </ImageBackground> */}
-
-      <CustomButton
-        title={"Sign In as KPO"}
-        color={"#000"}
-        style={{ width: "80%", borderRadius: 10, margin: 10 }}
-        handleOnPress={() => navigation.navigate("KPO")}
-      />
-      <CustomButton
-        title={"Sign In as Salesman"}
-        color={"#000"}
-        style={{ width: "80%", borderRadius: 10, margin: 10 }}
-        handleOnPress={() => navigation.navigate("Salesman")}
-      />
     </View>
   );
 };

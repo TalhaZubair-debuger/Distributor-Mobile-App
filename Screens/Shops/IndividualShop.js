@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { ScrollView, Text, View, useWindowDimensions } from 'react-native'
 import React, { Component, useCallback, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import CommonButton from '../../utils/CommonButton'
@@ -6,19 +6,22 @@ import { useFocusEffect, useRoute } from '@react-navigation/native';
 import HostName from '../../utils/HostName';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 
-export function IndividualShop ({navigation}) {
+export function IndividualShop({ navigation }) {
   const [shopData, setShopData] = useState("");
   const route = useRoute();
+  const windowWidth = useWindowDimensions().width;
+  const width = windowWidth - 40;
 
   useFocusEffect(
     useCallback(() => {
       getShopData();
     }, [])
   )
-  const getShopData = async() => {
+  const getShopData = async () => {
     const shopId = route.params.shopId;
-    
+
     try {
       const jwtToken = await AsyncStorage.getItem("jwtToken");
       const response = await fetch(`${HostName}shops/shop/${shopId}`, {
@@ -35,7 +38,9 @@ export function IndividualShop ({navigation}) {
       console.log(error);
     }
   }
-    return (
+  return (
+    <ScrollView>
+
       <View style={styles.body}>
         <View style={styles.flatlist}>
           <View style={styles.headingFlatlist}>
@@ -84,15 +89,69 @@ export function IndividualShop ({navigation}) {
               title={"Shop Records"}
               color={"#000"}
               style={{ width: "90%", borderRadius: 10, margin: "5%" }}
-              handleOnPress={() => navigation.navigate("Shop Records", {shopId: shopData._id})}
+              handleOnPress={() => navigation.navigate("Shop Records", { shopId: shopData._id })}
             />
           </View>
         </View>
+
+        <View style={styles.barchart}>
+          <View style={styles.headingFlatlist}>
+            <Text style={styles.head}>Product Sales Chart</Text>
+          </View>
+          <LineChart
+            data={{
+              labels: ["January", "February", "March", "April"],
+              datasets: [
+                {
+                  data: [
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                  ],
+                },
+              ],
+            }}
+            width={width}
+            height={220}
+            chartConfig={{
+              backgroundColor: "#dddddd55",
+              backgroundGradientFrom: "#eff3ff",
+              backgroundGradientTo: "#efefef",
+              decimalPlaces: 2,
+              color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
+              style: {
+                borderRadius: 5,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            }}
+            bezier
+            style={{
+              marginVertical: 8,
+              borderRadius: 5,
+            }}
+          />
+        </View>
       </View>
-    )
+    </ScrollView>
+  )
 }
 
 const styles = StyleSheet.create({
+  barchart: {
+    backgroundColor: "#fff",
+    width: "95%",
+    borderRadius: 10,
+    boxShadow: "5px 5px",
+    elevation: 20,
+    shadowColor: "#777777bb",
+    margin: 5,
+    padding: 5,
+  },
   body: {
     flex: 1,
     flexDirection: "column",

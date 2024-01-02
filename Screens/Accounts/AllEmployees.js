@@ -1,11 +1,38 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import { FlatList } from 'react-native'
 import ComonStyles from '../../utils/CommonCss'
 import EmployeeList from '../../utils/EmployeeList'
+import { useFocusEffect } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import HostName from '../../utils/HostName'
 
-const AllEmployees = () => {
+const AllEmployees = ({navigation}) => {
     const [data, setData] = useState("");
+    useFocusEffect(
+        useCallback(() => {
+          fetchEmployees()
+        }, [])
+      )
+      const fetchEmployees = async () => {
+        try {
+            const jwtToken = await AsyncStorage.getItem("jwtToken");
+            const response = await fetch(`${HostName}employees/get-all-employees`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${jwtToken}`
+              },
+              method: "GET"
+            })
+            const Data = await response.json();
+            setData(Data.employees);
+          } catch (error) {
+            console.log(error);
+            Alert.alert(
+              "Failure", "Failed to fetch Employee Data"
+            );
+          }
+      }
     return (
         <View>
             <View style={styles.flatlist}>
@@ -19,8 +46,9 @@ const AllEmployees = () => {
                             <FlatList
                                 data={data}
                                 renderItem={({ item }) => <EmployeeList
-                                    employeeName={item.emaployeeName}
-                                    employeeDesignation={item.employeeDesignation}
+                                employeeId={item._id}
+                                    employeeName={item.name}
+                                    employeeDesignation={item.designation}
                                     navigation={navigation} />}
                                 keyExtractor={item => item._id}
                             />

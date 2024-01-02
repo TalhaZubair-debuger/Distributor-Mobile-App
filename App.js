@@ -32,6 +32,7 @@ import VendorRecords from "./Screens/Vendors/VendorRecords";
 import Accounts from "./Screens/Accounts/Accounts";
 import AllEmployees from "./Screens/Accounts/AllEmployees";
 import AddEmployees from "./Screens/Accounts/AddEmployee";
+import Employee from "./Screens/Accounts/Employee";
 
 const Drawer = createDrawerNavigator();
 function ShopTab() {
@@ -51,7 +52,13 @@ function ShopTab() {
         },
       })}
     >
-      <Drawer.Screen name={"Shop"} component={Shop} />
+      <Drawer.Screen
+        name={"Shop"}
+        component={Shop}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Drawer.Screen name={"All Shops"} component={AllShops} />
       <Drawer.Screen name={"Add Shop"} component={AddShop} />
       <Drawer.Screen name={"Manage Shops"} component={ManageShops} />
@@ -99,8 +106,20 @@ function HomeTabs() {
         },
       })}
     >
-      <Tab.Screen name={"Home"} component={Home} />
-      <Tab.Screen name={"Vendors"} component={Finance} />
+      <Tab.Screen
+        name={"Home"}
+        component={Home}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={"Vendors"}
+        component={Finance}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Tab.Screen
         name={"Shops"}
         component={ShopTab}
@@ -108,8 +127,20 @@ function HomeTabs() {
           headerShown: false,
         }}
       />
-      <Tab.Screen name={"Warehouse"} component={Warehouse} />
-      <Tab.Screen name={"Accounts"} component={Accounts} />
+      <Tab.Screen
+        name={"Warehouse"}
+        component={Warehouse}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={"Accounts"}
+        component={Accounts}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -169,6 +200,7 @@ export default function App() {
         <RootStack.Screen name="Stock" component={Stock} />
         <RootStack.Screen name="All Employees" component={AllEmployees} />
         <RootStack.Screen name="Add Employee" component={AddEmployees} />
+        <RootStack.Screen name="Employee" component={Employee} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

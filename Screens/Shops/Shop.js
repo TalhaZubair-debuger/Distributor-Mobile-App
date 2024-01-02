@@ -23,6 +23,7 @@ import { LineChart } from "react-native-chart-kit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HostName from "../../utils/HostName";
 import { useFocusEffect } from "@react-navigation/native";
+import Header from "../../utils/Header";
 
 export default function Shop({ navigation }) {
   const windowWidth = useWindowDimensions().width;
@@ -93,6 +94,7 @@ export default function Shop({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.body}>
+        <Header screenName={"Shop"} navigation={navigation}/>
         <View style={styles.row}>
           <View style={styles.viewbox}>
             <Text style={styles.heading}>All Shops</Text>
@@ -114,62 +116,21 @@ export default function Shop({ navigation }) {
             <Text style={styles.head}>Top Performing Shops</Text>
           </View>
           <SafeAreaView>
-            <FlatList
-              data={shopData}
-              renderItem={({ item }) => (
-                <CommonFlatList
-                  title={item.shopName}
-                  revenue={item.revenue}
-                  shopId={item._id}
-                  navigation={navigation}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+            {
+              shopData ?
+                shopData.map(item => (
+                  <CommonFlatList
+                    title={item.shopName}
+                    revenue={item.revenue}
+                    shopId={item._id}
+                    key={item._id}
+                    navigation={navigation}
+                  />
+                ))
+                :
+                <></>
+            }
           </SafeAreaView>
-        </View>
-
-        <View style={styles.barchart}>
-          <View style={styles.headingFlatlist}>
-            <Text style={styles.head}>Product Sales Chart</Text>
-          </View>
-          <LineChart
-            data={{
-              labels: ["January", "February", "March", "April"],
-              datasets: [
-                {
-                  data: [
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                  ],
-                },
-              ],
-            }}
-            width={width}
-            height={220}
-            chartConfig={{
-              backgroundColor: "#dddddd55",
-              backgroundGradientFrom: "#eff3ff",
-              backgroundGradientTo: "#efefef",
-              decimalPlaces: 2,
-              color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 5,
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              },
-            }}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 5,
-            }}
-          />
         </View>
 
         <View style={styles.align}>
