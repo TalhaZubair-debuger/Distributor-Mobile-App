@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import { TextInput } from 'react-native'
 import ComonStyles from '../../utils/CommonCss'
@@ -21,6 +21,7 @@ const ShopRecords = () => {
     const [youGot, setYouGot] = useState(null);
     const [recordSendValue, setRecordSendValue] = useState("Send");
     const [record, setRecord] = useState();
+    const [change, setChange] = useState(false);
     const route = useRoute();
     const shopId = route.params.shopId;
     const data = [
@@ -43,7 +44,7 @@ const ShopRecords = () => {
         useCallback(() => {
             fetchStockData();
             fetchShopRecordData();
-        }, [])
+        }, [change])
     )
     const fetchStockData = async () => {
         try {
@@ -119,8 +120,9 @@ const ShopRecords = () => {
                     });
                     const data = await response.json();
                     if (data) {
-                        console.log(data.records);
-                        setRecord(data.records)
+                        // console.log(data.records);
+                        // setRecord(data.records);
+                        setChange(true)
                         Alert.alert("Alert", `${data.message}`);
                     }
                 } catch (error) {
@@ -153,8 +155,9 @@ const ShopRecords = () => {
                     });
                     const data = await response.json();
                     if (data) {
-                        console.log(data.records);
-                        setRecord(data.records);
+                        // console.log(data.records);
+                        // setRecord(data.records);
+                        setChange(true)
                         Alert.alert("Alert", `${data.message}`);
                     }
                 } catch (error) {
@@ -168,15 +171,15 @@ const ShopRecords = () => {
         <View style={styles.body}>
             <View style={[styles.row, styles.bgColor]}>
                 <View style={styles.block33}>
-                    <Text style={[styles.font15, styles.green]}>Rs.{record ? record[0].totalRevenue : 0}</Text>
+                    <Text style={[styles.font15, styles.green]}>Rs.{record ? record[0] ? record[0].totalRevenue : 0 : 0}</Text>
                     <Text>Total Revenue</Text>
                 </View>
                 <View style={styles.block33}>
-                    <Text style={[styles.font15, styles.blue]}>Rs.{record ? parseInt(record[0].totalSent) : 0}</Text>
+                    <Text style={[styles.font15, styles.blue]}>Rs.{record ? record[0] ? parseInt(record[0].totalSent) : 0 : 0}</Text>
                     <Text>Total Sent</Text>
                 </View>
                 <View style={styles.block33}>
-                    <Text style={[styles.font15, styles.red]}>Rs.{record ? parseInt(record[0].balance) : 0}</Text>
+                    <Text style={[styles.font15, styles.red]}>Rs.{record ? record[0] ? parseInt(record[0].balance) : 0 : 0}</Text>
                     <Text>Balance</Text>
                 </View>
             </View>
@@ -195,23 +198,28 @@ const ShopRecords = () => {
                 </View>
             </View>
             <View style={styles.records}>
-                <View style={styles.chatContainer}>
-                    <SafeAreaView>
-                        <FlatList
-                            data={record ? record[0].records : null}
-                            renderItem={({ item }) => <RecordsList
-                            quantity={item.quantity}
-                            description={item.description}
-                            youGave={item.youGave}
-                            youGot={item.youGot}
-                            sent={item.sent}
-                            recieved={item.recieved}
-                            />}
-                            keyExtractor={item => item._id}
-
-                        />
-                    </SafeAreaView>
-                </View>
+                <ScrollView>
+                    <View style={styles.chatContainer}>
+                        {/* <SafeAreaView> */}
+                        {
+                            record ?
+                                record[0].records.map((item, index) => (
+                                    <RecordsList
+                                        quantity={item.quantity}
+                                        description={item.description}
+                                        youGave={item.youGave}
+                                        youGot={item.youGot}
+                                        sent={item.sent}
+                                        recieved={item.recieved}
+                                        key={index}
+                                    />
+                                ))
+                                :
+                                null
+                        }
+                        {/* </SafeAreaView> */}
+                    </View>
+                </ScrollView>
                 <View style={styles.addRecords}>
                     {
                         recordSendValue === "Send" ?

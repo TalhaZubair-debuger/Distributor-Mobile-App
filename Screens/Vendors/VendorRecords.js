@@ -25,6 +25,7 @@ const VendorRecords = () => {
     const [msgSendValue, setMsgSendValue] = useState("Send");
     const [vendorData, setVendorData] = useState();
     const [VendorRecords, setVendorRecords] = useState();
+    const [change, setChange] = useState(false);
     const route = useRoute();
     const vendorId = route.params.vendorId;
     const data = [
@@ -103,7 +104,6 @@ const VendorRecords = () => {
             Alert.alert("Failure", "Please fill form completely");
         } else {
             if (recordSendValue === "Send") {
-                console.log("1");
                 const product = vendorData.vendorProducts.filter(item => {
                     return item.vendorProducts === product
                 })
@@ -200,6 +200,9 @@ const VendorRecords = () => {
             <View style={styles.records}>
                 <View style={styles.chatContainer}>
                     <SafeAreaView>
+                        {
+
+                        }
                         <FlatList
                             data={data}
                             renderItem={({ item }) => <RecordsList
@@ -209,7 +212,6 @@ const VendorRecords = () => {
                                 recieved={item.recieved}
                             />}
                             keyExtractor={item => item.id}
-
                         />
                     </SafeAreaView>
                 </View>
