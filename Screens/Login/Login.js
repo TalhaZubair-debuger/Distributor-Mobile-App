@@ -11,13 +11,12 @@ import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
 import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = ({ navigation }) => {
   const [email, SetEmail] = useState("");
   const [password, SetPassword] = useState("");
   const [error, setError] = useState("");
-
 
   const onSubmitHandler = async (event) => {
     // event.preventDefault();
@@ -36,12 +35,11 @@ const Login = ({ navigation }) => {
           password,
         }),
       });
-      const data = res;
+      const data = await res.json();
       console.log(data.token);
-      await AsyncStorage.setItem('jwtToken', `Bearer ${data}`);
+      await AsyncStorage.setItem("jwtToken", `Bearer ${data}`);
       setError("");
       navigation.navigate("HomeTabs");
-
     } catch (error) {
       console.log(error);
     }
