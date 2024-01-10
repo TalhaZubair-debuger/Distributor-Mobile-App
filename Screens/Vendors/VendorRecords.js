@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import { TextInput } from 'react-native'
 import ComonStyles from '../../utils/CommonCss'
@@ -92,7 +92,8 @@ const VendorRecords = () => {
                     "Failure!", Data.message
                 );
             } else {
-                setVendorRecords(Data.records);
+                setVendorRecords(Data.records[0].records);
+                getVendorData();
             }
         } catch (error) {
             console.log(error);
@@ -104,13 +105,14 @@ const VendorRecords = () => {
             Alert.alert("Failure", "Please fill form completely");
         } else {
             if (recordSendValue === "Send") {
-                const product = vendorData.vendorProducts.filter(item => {
-                    return item.vendorProducts === product
+                const Product = vendorData.vendorProducts.filter(item => {
+                    return item.productName == product
                 })
+                console.log(vendorData);
                 const formData = {
-                    productName: product[0].productName,
-                    quantity,
-                    youGave: product[0].productPrice * parseInt(quantity),
+                    productName: Product[0].productName,
+                    quantity: null,
+                    youGave: youGave,
                     youGot: null,
                     sent: true,
                     recieved: false
@@ -138,18 +140,19 @@ const VendorRecords = () => {
                 }
             }
             else if (recordSendValue === "Recieve") {
-                const product = vendorData.vendorProducts.filter(item => {
-                    return item.vendorProducts === product
-                })
-                const formData = {
-                    productName: product[0].productName,
-                    quantity: null,
-                    youGave: null,
-                    youGot: youGot,
-                    sent: false,
-                    recieved: true
-                }
                 try {
+                    const Product = vendorData.vendorProducts.filter(item => {
+                        return item.productName == product
+                    })
+                    console.log(Product);
+                    const formData = {
+                        productName: Product[0].productName,
+                        quantity: youGot,
+                        youGave: null,
+                        youGot: parseInt(Product[0].productPrice) * parseInt(youGot),
+                        sent: false,
+                        recieved: true
+                    }
                     const jwtToken = await AsyncStorage.getItem("jwtToken");
                     const response = await fetch(`${HostName}vendor-records/add-records/${vendorId}`, {
                         headers: {
@@ -198,23 +201,26 @@ const VendorRecords = () => {
                 </View>
             </View>
             <View style={styles.records}>
-                <View style={styles.chatContainer}>
-                    <SafeAreaView>
+                <ScrollView>
+                    <View style={styles.chatContainer}>
                         {
-
+                            VendorRecords ?
+                                VendorRecords.map((item, index) => (
+                                    <RecordsList
+                                        quantity={item.quantity}
+                                        description={item.description}
+                                        youGave={item.youGave}
+                                        youGot={item.youGot}
+                                        sent={item.sent}
+                                        recieved={item.recieved}
+                                        key={index}
+                                    />
+                                ))
+                                :
+                                null
                         }
-                        <FlatList
-                            data={data}
-                            renderItem={({ item }) => <RecordsList
-                                entryMessage={item.entryMessage}
-                                entryDate={item.entryDate}
-                                sent={item.sent}
-                                recieved={item.recieved}
-                            />}
-                            keyExtractor={item => item.id}
-                        />
-                    </SafeAreaView>
-                </View>
+                    </View>
+                </ScrollView>
                 <View style={styles.addRecords}>
                     {
                         recordSendValue === "Send" ?
@@ -239,10 +245,26 @@ const VendorRecords = () => {
                                     </View>
                                 </View>
                                 <View style={styles.row}>
+                                    <View style={styles.dropdown2}>
+                                        <Picker
+                                            value={product}
+                                            selectedValue={product}
+                                            onValueChange={(value) => setProduct(value)}
+                                        >
+                                            {
+                                                vendorData ?
+                                                    vendorData.vendorProducts.map(item => (
+                                                        <Picker.Item key={item.productPrice} label={item.productName} value={item.productName} />
+                                                    ))
+                                                    :
+                                                    <Text>No Products</Text>
+                                            }
+                                        </Picker>
+                                    </View>
                                     <CustomButton
                                         title={<FontAwesome5 name={"paper-plane"} size={20} color={"#fff"} />}
                                         color={"#000"}
-                                        style={{ width: "100%", borderRadius: 10, marginVertical: 5 }}
+                                        style={{ width: "20%", borderRadius: 10, marginVertical: 5 }}
                                         handleOnPress={handleAddRecord}
                                     />
                                 </View>
@@ -271,6 +293,7 @@ const VendorRecords = () => {
                                 <View style={styles.row}>
                                     <View style={styles.dropdown2}>
                                         <Picker
+                                            value={product}
                                             selectedValue={product}
                                             onValueChange={(value) => setProduct(value)}
                                         >
