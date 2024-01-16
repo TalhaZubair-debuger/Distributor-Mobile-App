@@ -21,10 +21,12 @@ const VendorRecords = () => {
     const [description, setDescription] = useState();
     const [youGot, setYouGot] = useState();
     const [youGave, setYouGave] = useState();
-    const [product, setProduct] = useState();
+    const [product, setProduct] = useState(null);
     const [msgSendValue, setMsgSendValue] = useState("Send");
     const [vendorData, setVendorData] = useState();
     const [VendorRecords, setVendorRecords] = useState();
+    const [venderBalanceData, setVenderBalanceData] = useState();
+    const [transactionId, setTransactionId] = useState("");
     const [change, setChange] = useState(false);
     const route = useRoute();
     const vendorId = route.params.vendorId;
@@ -93,6 +95,7 @@ const VendorRecords = () => {
                 );
             } else {
                 setVendorRecords(Data.records[0].records);
+                setVenderBalanceData(Data.records[0]);
                 getVendorData();
             }
         } catch (error) {
@@ -101,21 +104,22 @@ const VendorRecords = () => {
     }
 
     const handleAddRecord = async () => {
-        if (recordSendValue === null) {
+        if (recordSendValue === null || product === null) {
             Alert.alert("Failure", "Please fill form completely");
         } else {
             if (recordSendValue === "Send") {
                 const Product = vendorData.vendorProducts.filter(item => {
                     return item.productName == product
                 })
-                console.log(vendorData);
+                // console.log(Product[0].productName+"113");
                 const formData = {
                     productName: Product[0].productName,
                     quantity: null,
                     youGave: youGave,
                     youGot: null,
                     sent: true,
-                    recieved: false
+                    recieved: false,
+                    transactionId
                 }
                 try {
                     const jwtToken = await AsyncStorage.getItem("jwtToken");
@@ -178,11 +182,11 @@ const VendorRecords = () => {
         <View style={styles.body}>
             <View style={[styles.row, styles.bgColor]}>
                 <View style={styles.block33}>
-                    <Text style={[styles.font15, styles.blue]}>Rs.1000000</Text>
+                    <Text style={[styles.font15, styles.blue]}>Rs.{venderBalanceData ? venderBalanceData.totalSent : 0}</Text>
                     <Text>Total Sent</Text>
                 </View>
                 <View style={styles.block33}>
-                    <Text style={[styles.font15, styles.red]}>Rs.100000</Text>
+                    <Text style={[styles.font15, styles.red]}>Rs.{venderBalanceData ? venderBalanceData.balance : 0}</Text>
                     <Text>Balance</Text>
                 </View>
             </View>
@@ -243,6 +247,16 @@ const VendorRecords = () => {
                                             <Picker.Item label="Recieve" value="Recieve" />
                                         </Picker>
                                     </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <TextInput
+                                        placeholder="Bank Transaction ID"
+                                        style={ComonStyles.inputStyle0}
+                                        value={transactionId}
+                                        inputMode="text"
+                                        onChangeText={(newValue) => setTransactionId(newValue)}
+                                        required
+                                    />
                                 </View>
                                 <View style={styles.row}>
                                     <View style={styles.dropdown2}>

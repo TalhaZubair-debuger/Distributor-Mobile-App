@@ -73,6 +73,7 @@ const SignUp = ({ navigation }) => {
         placeholder="Password"
         style={ComonStyles.inputStyle1}
         value={password}
+        secureTextEntry={true}
         inputMode="text"
         onChangeText={(newValue) => SetPassword(newValue)}
       />

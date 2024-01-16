@@ -25,6 +25,7 @@ const Stock = () => {
   useFocusEffect(
     useCallback(() => {
       getProductData();
+      updateProductMonthlyRecords();
     }, [])
   )
   const getProductData = async () => {
@@ -43,6 +44,26 @@ const Stock = () => {
       }
       else {
         setProductData(data.product);
+      }
+    } catch (error) {
+      Alert.alert("Failed!", `${error.message}`);
+      console.log(error);
+    }
+  }
+
+  const updateProductMonthlyRecords = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}products/update-product-monthly-records/${productId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const data = await response.json();
+      if (data) {
+        console.log("data recieved");
       }
     } catch (error) {
       Alert.alert("Failed!", `${error.message}`);
@@ -165,22 +186,24 @@ const Stock = () => {
         />
       </View>
 
+      <View style={styles.flatlist}>
+        <Text style={styles.head2}>Predicted Revenue for next month</Text>
+        <Text style={styles.head3}>Rs.{productData ? parseInt(productData.predictedRevenue) : 0}</Text>
+      </View>
+
       <View style={styles.barchart}>
         <View style={styles.headingFlatlist}>
           <Text style={styles.head}>Product Sales Chart</Text>
         </View>
         <LineChart
           data={{
-            labels: ["January", "February", "March", "April"],
+            labels: ["November", "December", "January"],
             datasets: [
               {
                 data: [
-                  Math.random() * 1000,
-                  Math.random() * 1000,
-                  Math.random() * 1000,
-                  Math.random() * 1000,
-                  Math.random() * 1000,
-                  Math.random() * 1000,
+                  productData.monthlyRecords[0].revenue,
+                  productData.monthlyRecords[1].revenue,
+                  productData.monthlyRecords[2].revenue,
                 ],
               },
             ],
@@ -245,6 +268,16 @@ const styles = StyleSheet.create({
   head: {
     fontSize: 30,
     fontWeight: 600,
+    textAlign: "center"
+  },
+  head2: {
+    fontSize: 20,
+    fontWeight: 600,
+    textAlign: "center"
+  },
+  head3: {
+    fontSize: 20,
+    fontWeight: "400",
     textAlign: "center"
   },
   row: {

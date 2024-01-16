@@ -75,7 +75,7 @@ const AddStocks = ({ navigation }) => {
             placeholder="Price"
             style={ComonStyles.inputStyle1}
             value={price}
-            inputMode="decimal"
+            inputMode="numeric"
             onChangeText={(newValue) => setPrice(newValue)}
           />
           <CustomButton

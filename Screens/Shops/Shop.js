@@ -128,7 +128,7 @@ export default function Shop({ navigation }) {
                   />
                 ))
                 :
-                <></>
+                <Text style={styles.textCenter}>No Shop added</Text>
             }
           </SafeAreaView>
         </View>
@@ -214,4 +214,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
+  textCenter: {
+    textAlign: "center"
+  }
 });

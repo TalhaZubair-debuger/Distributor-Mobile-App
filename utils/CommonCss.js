@@ -12,6 +12,16 @@ const ComonStyles = StyleSheet.create({
         fontSize: 20,
         color: '#000',
     },
+    inputStyle0:{
+        width: '100%',
+        height: 50,
+        fontSize: 15,
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#000'
+    },
     inputStyle1:{
         width: '80%',
         height: 50,

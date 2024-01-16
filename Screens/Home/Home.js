@@ -36,8 +36,30 @@ export function Home({ navigation }) {
       fetchStockData();
       fetchShopData();
       fetchLowStockProductData();
+      calculateProductRevenues();
     }, [])
   )
+  const calculateProductRevenues = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}products/update-product-revenue`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const data = response.json();
+      if (data) {
+        console.log("Product revenue updated");
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Failure!", "Product revenue couldn't be calculated!"
+      );
+    }
+  }
   const fetchUserDetails = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem("jwtToken");
@@ -115,7 +137,7 @@ export function Home({ navigation }) {
     } catch (error) {
       console.log(error);
       Alert.alert(
-        "Failure!", "No Products found"
+        "Failure!", "No Low Stock Products found"
       );
     }
   };
@@ -123,7 +145,7 @@ export function Home({ navigation }) {
     <ScrollView>
       <View style={styles.body}>
         <Header
-        screenName={"Home"} navigation={navigation}
+          screenName={"Home"} navigation={navigation}
         />
         <View style={styles.row}>
           <View style={styles.viewbox}>

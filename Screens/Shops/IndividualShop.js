@@ -10,17 +10,19 @@ import { LineChart } from 'react-native-chart-kit';
 
 export function IndividualShop({ navigation }) {
   const [shopData, setShopData] = useState("");
+  const [monthlyData, setMonthyData] = useState();
   const route = useRoute();
   const windowWidth = useWindowDimensions().width;
   const width = windowWidth - 40;
+  const shopId = route.params.shopId;
 
   useFocusEffect(
     useCallback(() => {
       getShopData();
+      fetchMonthlyShopRecordData();
     }, [])
   )
   const getShopData = async () => {
-    const shopId = route.params.shopId;
 
     try {
       const jwtToken = await AsyncStorage.getItem("jwtToken");
@@ -38,6 +40,26 @@ export function IndividualShop({ navigation }) {
       console.log(error);
     }
   }
+
+  const fetchMonthlyShopRecordData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}shop-records/get-monthly-records/${shopId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const Data = await response.json();
+      if (Data) {
+        console.log(Data.shopRecord.predictedRevenue);
+        setMonthyData(Data.shopRecord);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <ScrollView>
 
@@ -94,22 +116,24 @@ export function IndividualShop({ navigation }) {
           </View>
         </View>
 
+        <View style={styles.flatlist}>
+          <Text style={styles.head2}>Predicted Revenue for next month</Text>
+          <Text style={styles.head3}>Rs.{monthlyData ? parseInt(monthlyData.predictedRevenue) : 0}</Text>
+        </View>
+
         <View style={styles.barchart}>
           <View style={styles.headingFlatlist}>
             <Text style={styles.head}>Product Sales Chart</Text>
           </View>
           <LineChart
             data={{
-              labels: ["January", "February", "March", "April"],
+              labels: ["November", "December", "January"],
               datasets: [
                 {
                   data: [
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
+                    monthlyData.monthlyRecords[0].revenue,
+                    monthlyData.monthlyRecords[1].revenue,
+                    monthlyData.monthlyRecords[2].revenue,
                   ],
                 },
               ],
@@ -142,6 +166,16 @@ export function IndividualShop({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  head2: {
+    fontSize: 20,
+    fontWeight: 600,
+    textAlign: "center"
+  },
+  head3: {
+    fontSize: 20,
+    fontWeight: "400",
+    textAlign: "center"
+  },
   barchart: {
     backgroundColor: "#fff",
     width: "95%",

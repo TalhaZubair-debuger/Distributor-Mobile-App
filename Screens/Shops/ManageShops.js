@@ -79,31 +79,37 @@ export default function ManageShops({ navigation }) {
       </View>
       <View style={styles.flatlist}>
         <SafeAreaView>
-          <FlatList
-            data={data}
-            renderItem={({ item }) => (
+          {
+            data?
 
-              <View style={styles.item}>
-                <Text style={styles.title}>{item.shopName}</Text>
-                <Text style={styles.purchase}>
-                  <View style={styles.fontawesome}>
-                    <Pressable onPress={() => handleEdit(item._id)}>
-                      <Text style={styles.innerFonts}>
-                        <FontAwesome5 name={"edit"} size={20} color={"#aaaaaa"} />
-                      </Text>
-                    </Pressable>
-                    <Pressable onPress={() => handleDelete(item._id)}>
-                      <Text style={styles.innerFonts}>
-                        <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
-                      </Text>
-                    </Pressable>
-                  </View>
-                </Text>
-              </View>
-
-            )}
-            keyExtractor={item => item._id}
-          />
+            <FlatList
+              data={data}
+              renderItem={({ item }) => (
+  
+                <View style={styles.item}>
+                  <Text style={styles.title}>{item.shopName}</Text>
+                  <Text style={styles.purchase}>
+                    <View style={styles.fontawesome}>
+                      <Pressable onPress={() => handleEdit(item._id)}>
+                        <Text style={styles.innerFonts}>
+                          <FontAwesome5 name={"edit"} size={20} color={"#aaaaaa"} />
+                        </Text>
+                      </Pressable>
+                      <Pressable onPress={() => handleDelete(item._id)}>
+                        <Text style={styles.innerFonts}>
+                          <FontAwesome5 name={"trash-alt"} size={20} color={"#ff0000"} />
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </Text>
+                </View>
+  
+              )}
+              keyExtractor={item => item._id}
+            />
+            :
+            <Text style={styles.textCenter}>No Shops found</Text>
+          }
         </SafeAreaView>
       </View>
     </View>
@@ -184,5 +190,8 @@ const styles = StyleSheet.create({
   },
   hidden: {
     display: "none"
+  },
+  textCenter: {
+    textAlign: "center"
   }
 });

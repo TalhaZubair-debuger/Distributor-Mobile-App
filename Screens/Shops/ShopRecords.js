@@ -22,6 +22,7 @@ const ShopRecords = () => {
     const [recordSendValue, setRecordSendValue] = useState("Send");
     const [record, setRecord] = useState();
     const [change, setChange] = useState(false);
+    const [transactionId, setTransactionId] = useState();
     const route = useRoute();
     const shopId = route.params.shopId;
     const data = [
@@ -44,12 +45,13 @@ const ShopRecords = () => {
         useCallback(() => {
             fetchStockData();
             fetchShopRecordData();
+            fetchMonthlyShopRecordData();
         }, [change])
     )
     const fetchStockData = async () => {
         try {
             const jwtToken = await AsyncStorage.getItem("jwtToken");
-            const response = await fetch(`${HostName}products/top-products`, {
+            const response = await fetch(`${HostName}products/products`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `${jwtToken}`
@@ -88,6 +90,22 @@ const ShopRecords = () => {
             console.log(error);
         }
     };
+    const fetchMonthlyShopRecordData = async () => {
+        try {
+            const jwtToken = await AsyncStorage.getItem("jwtToken");
+            const response = await fetch(`${HostName}shop-records/get-monthly-records/${shopId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${jwtToken}`
+                },
+                method: "GET"
+            })
+            const Data = await response.json();
+            console.log(Data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const handleAddRecord = async () => {
         if (
             description === null ||
@@ -120,8 +138,6 @@ const ShopRecords = () => {
                     });
                     const data = await response.json();
                     if (data) {
-                        // console.log(data.records);
-                        // setRecord(data.records);
                         setChange(true)
                         Alert.alert("Alert", `${data.message}`);
                     }
@@ -141,7 +157,8 @@ const ShopRecords = () => {
                     youGave: null,
                     youGot: youGot,//OK
                     sent: false,
-                    recieved: true//Ok
+                    recieved: true,//Ok
+                    transactionId
                 }
                 try {
                     const jwtToken = await AsyncStorage.getItem("jwtToken");
@@ -155,8 +172,6 @@ const ShopRecords = () => {
                     });
                     const data = await response.json();
                     if (data) {
-                        // console.log(data.records);
-                        // setRecord(data.records);
                         setChange(true)
                         Alert.alert("Alert", `${data.message}`);
                     }
@@ -289,6 +304,16 @@ const ShopRecords = () => {
                                             <Picker.Item label="Recieve" value="Recieve" />
                                         </Picker>
                                     </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <TextInput
+                                        placeholder="Bank Transaction ID"
+                                        style={ComonStyles.inputStyle0}
+                                        value={transactionId}
+                                        inputMode="text"
+                                        onChangeText={(newValue) => setTransactionId(newValue)}
+                                        required
+                                    />
                                 </View>
                                 <View style={styles.row}>
                                     <View style={styles.dropdown2}>

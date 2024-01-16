@@ -167,7 +167,7 @@ export const Warehouse = ({ navigation }) => {
                   />
                 ))
                 :
-                <></>
+                <Text style={styles.textCenter}>No stock found</Text>
             }
           </SafeAreaView>
         </View>
@@ -220,6 +220,9 @@ export const Warehouse = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  textCenter: {
+    textAlign: "center"
+  },
   body: {
     flex: 1,
     flexDirection: "column",
