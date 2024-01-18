@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import ComonStyles from "../../utils/CommonCss";
-import BackGroundLogin from "../../assets/img/BackGroundLogin.png";
 import CustomButton from "../../utils/CommonButton";
 import HostName from "../../utils/HostName";
 
@@ -22,34 +21,119 @@ const SignUp = ({ navigation }) => {
   const [number, SetNumber] = useState(null);
   const [cnic, SetCnic] = useState(null);
 
-  function singup() {
-    fetch(`${HostName}user/signup`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: username,
-        password,
-        email,
-        number,
-        cnic,
-      }),
-    })
-      .then((res) => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Something went wrong 😮");
-        }
-        return res.json();
+
+  const signup = async() => {
+
+    try {
+      
+      const response = await fetch(`${HostName}user/signup`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: username,
+          password,
+          email,
+          number,
+          cnic,
+        }),
       })
-      .then((data) => {
+  
+      const data = await response.json();
+      if (data){
         console.log(data);
-        navigation.navigate("Login");
+          navigation.navigate("Login");
+      }
+      else {
+        Alert.alert("Failed to Sign Up!", "Server error");
+      }
+    } catch (error) {
+      Alert.alert("Failed to Sign Up!", "Server error");
+    }
+
+  }
+  function singup() {
+    if (username === "" || password === "" || email === "" || number === null || cnic === null){
+      Alert.alert("Alert!", "Fill form completely");
+    }
+    else {
+      fetch(`${HostName}user/signup`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: username,
+          password,
+          email,
+          number,
+          cnic,
+        }),
       })
-      .catch((err) => {
-        Alert.alert("Failed to Sign Up!", err.data.msg)
-        console.log(err.data.msg);
-      });
+        .then((res) => {
+          if (res.status !== 200 && res.status !== 201) {
+            throw new Error("Something went wrong");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data);
+          navigation.navigate("Login");
+        })
+        .catch((err) => {
+          Alert.alert("Failed to Sign Up!", err);
+          // console.log(err.data.msg);
+        });
+
+    }
+  }
+
+  const handleSignUp = async () => {
+    console.log(number +" "+ cnic);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email === "" || password === "" || number === null || username === "" || cnic === null) {
+      Alert.alert("Alert!", "Please fill the form completely.");
+    } else {
+      try {
+        if (!emailRegex.test(email)) {
+          Alert.alert('Alert!', 'Entered value is not an email');
+          return;
+        }
+        if (number.length  != 11){
+          Alert.alert('Alert!', 'Contact No. length should be 11 digits');
+        return;
+        }
+
+        const res = await fetch(`${HostName}user/signup`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            name: username,
+            number,
+            password,
+            cnic
+          })
+        })
+
+        const data = await res.json();
+        if (data.message && !data.userId){
+          Alert.alert("Alert!", data.message);
+          return;
+        }
+        if (data.userId) {
+          Alert.alert("Alert!", data.message);
+          navigation.navigate("Login");
+          return;
+        }
+      } catch (err) {
+        Alert.alert("Error!", err.message);
+        return;
+      }
+    }
   }
 
   return (
@@ -96,7 +180,7 @@ const SignUp = ({ navigation }) => {
         title={"Sign Up"}
         color={"#000"}
         style={{ width: "80%", borderRadius: 10, margin: 10 }}
-        handleOnPress={singup}
+        handleOnPress={handleSignUp}
       />
       <Pressable
         style={styles.button}

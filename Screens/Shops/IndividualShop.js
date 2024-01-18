@@ -118,47 +118,52 @@ export function IndividualShop({ navigation }) {
 
         <View style={styles.flatlist}>
           <Text style={styles.head2}>Predicted Revenue for next month</Text>
-          <Text style={styles.head3}>Rs.{monthlyData ? parseInt(monthlyData.predictedRevenue) : 0}</Text>
+          <Text style={styles.head3}>Rs.{monthlyData ? monthlyData.predictedRevenue ? parseInt(monthlyData.predictedRevenue) : 0 : 0}</Text>
         </View>
 
         <View style={styles.barchart}>
           <View style={styles.headingFlatlist}>
             <Text style={styles.head}>Product Sales Chart</Text>
           </View>
-          <LineChart
-            data={{
-              labels: ["November", "December", "January"],
-              datasets: [
-                {
-                  data: [
-                    monthlyData.monthlyRecords[0].revenue,
-                    monthlyData.monthlyRecords[1].revenue,
-                    monthlyData.monthlyRecords[2].revenue,
+          {
+            monthlyData ?
+              <LineChart
+                data={{
+                  labels: ["November", "December", "January"],
+                  datasets: [
+                    {
+                      data: [
+                        monthlyData.monthlyRecords[0] ? monthlyData.monthlyRecords[0].revenue : 0,
+                        monthlyData.monthlyRecords[1] ? monthlyData.monthlyRecords[1].revenue : 0,
+                        monthlyData.monthlyRecords[2] ? monthlyData.monthlyRecords[2].revenue : 0,
+                      ],
+                    },
                   ],
-                },
-              ],
-            }}
-            width={width}
-            height={220}
-            chartConfig={{
-              backgroundColor: "#dddddd55",
-              backgroundGradientFrom: "#eff3ff",
-              backgroundGradientTo: "#efefef",
-              decimalPlaces: 2,
-              color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 5,
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              },
-            }}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 5,
-            }}
-          />
+                }}
+                width={width}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#dddddd55",
+                  backgroundGradientFrom: "#eff3ff",
+                  backgroundGradientTo: "#efefef",
+                  decimalPlaces: 2,
+                  color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
+                  style: {
+                    borderRadius: 5,
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 5,
+                }}
+              />
+              :
+              <></>
+          }
         </View>
       </View>
     </ScrollView>

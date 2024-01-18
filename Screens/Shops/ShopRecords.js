@@ -60,6 +60,7 @@ const ShopRecords = () => {
             })
             const Data = await response.json();
             setProductData(Data.products);
+            setDescription(Data.products[0].productName)
         } catch (error) {
             console.log(error);
             Alert.alert(

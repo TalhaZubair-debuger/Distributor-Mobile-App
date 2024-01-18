@@ -56,7 +56,7 @@ export default function AllVendors({ navigation }) {
                   <VendorsFlatList title={item.vendorName} id={item._id} navigation={navigation} key={item._id} />
                 ))
                 :
-                <></>
+                <Text style={styles.textCenter}>No Vendors found</Text>
             }
           </SafeAreaView>
         </View>
@@ -66,6 +66,9 @@ export default function AllVendors({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  textCenter:{
+    textAlign:"center"
+  },
   body: {
     flex: 1,
     flexDirection: "column",

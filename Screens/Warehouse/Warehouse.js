@@ -38,6 +38,7 @@ export const Warehouse = ({ navigation }) => {
       })
       const Data = await response.json();
       setData(Data.products);
+      // setProductName(Data.products[0].productName);
     } catch (error) {
       console.log(error);
       Alert.alert(
