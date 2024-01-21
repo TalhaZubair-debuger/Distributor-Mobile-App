@@ -26,6 +26,7 @@ const Stock = () => {
     useCallback(() => {
       getProductData();
       updateProductMonthlyRecords();
+      updateProductWeeklyRecords();
     }, [])
   )
   const getProductData = async () => {
@@ -70,6 +71,28 @@ const Stock = () => {
       console.log(error);
     }
   }
+
+
+  const updateProductWeeklyRecords = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem("jwtToken");
+      const response = await fetch(`${HostName}products/update-product-weekly-records/${productId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `${jwtToken}`
+        },
+        method: "GET"
+      })
+      const data = await response.json();
+      if (data) {
+        console.log("The weekly data =>",data);
+      }
+    } catch (error) {
+      Alert.alert("Failed!", `${error.message}`);
+      console.log(error);
+    }
+  }
+
 
   const handleUpdateProductDetails = async () => {
     if (
