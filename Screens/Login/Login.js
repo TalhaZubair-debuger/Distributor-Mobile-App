@@ -95,7 +95,7 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.body}>
-      <Text style={ComonStyles.heading1}>Distributor?</Text>
+      <Text style={ComonStyles.heading1}>Distribex</Text>
       <Text style={ComonStyles.heading3}>SignIn here</Text>
       <TextInput
         placeholder="Email"
